@@ -50,3 +50,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Should be rebuilt for all systems hosts
+cross-compiler
+iso
+*.bin
+*.iso
+.vscode
