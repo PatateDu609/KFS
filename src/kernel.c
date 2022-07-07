@@ -4,6 +4,8 @@
 
 #include "CPU/mode.h"
 #include "IO/terminal.h"
+#include "IO/write.h"
+#include "IO/read.h"
 
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most likely run into trouble"
@@ -13,29 +15,18 @@
 #error "You must compile for i386"
 #endif
 
-size_t strlen(const char *str)
-{
-	size_t len = 0;
-	while (str[len])
-		len++;
-	return len;
-}
-
-void terminal_writestring(const char *data)
-{
-	terminal_write(data, strlen(data));
-}
-
 void terminal_motd(void)
 {
+	terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK));
 	terminal_writestring("        :::      :::::::::\n");
 	terminal_writestring("       :+:      :+:    :+:\n");
 	terminal_writestring("     +:+ +:+         +:+  \n");
 	terminal_writestring("   +#+  +:+       +#+     \n");
 	terminal_writestring(" +#+#+#+#+#+   +#+        \n");
 	terminal_writestring("      #+#    #+#          \n");
-	terminal_writestring("     ###   ########.kfs   \n");
-	terminal_writestring("By gboucett\n");
+	terminal_writestring("     ###   ########.kfs   ");
+	terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_BLUE, VGA_COLOR_BLACK));
+	terminal_writestring("By gboucett\n\n");
 }
 
 int main(void)
@@ -45,5 +36,6 @@ int main(void)
 	terminal_motd();
 
 	sti();
+	readline(NULL, 0);
 	return 0;
 }

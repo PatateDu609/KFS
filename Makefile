@@ -16,7 +16,8 @@ PATH_LIB_GCC		:=	cross-compiler/lib/gcc/i386-elf/12.1.0/
 
 LINKER				:=	$(PATH_SRC)/linker.ld
 
-CFLAGS				:=	-O2 -Wall -Werror -Wextra	\
+CFLAGS				:=	-O2 -Wall -Werror -Wextra 	\
+						-g							\
 						-std=gnu99					\
 						-ffreestanding				\
 						-fno-exceptions				\
@@ -24,15 +25,46 @@ CFLAGS				:=	-O2 -Wall -Werror -Wextra	\
 						-nostdlib					\
 						-nodefaultlibs				\
 						-I$(PATH_INC)				\
+						-I$(PATH_INC)/libc			\
 
 ASFLAGS				:=
-LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -l gcc
+LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -l gcc -g
 
 BASENAME			:=	kernel.c					\
 						boot.s						\
 						system/IO/init.c			\
+						system/IO/terminal.c		\
 						system/IO/write.c			\
+						system/IO/read.c			\
 						system/CPU/mode.c			\
+						\
+						libc/string/strlen.c		\
+						libc/string/strcpy.c		\
+						libc/string/strncpy.c		\
+						libc/string/strcmp.c		\
+						libc/string/strncmp.c		\
+						libc/string/strcat.c		\
+						libc/string/strncat.c		\
+						libc/string/strchr.c		\
+						libc/string/strstr.c		\
+						libc/memory/memset.c		\
+						libc/memory/memmove.c		\
+						libc/memory/memcpy.c		\
+						libc/memory/memchr.c		\
+						libc/memory/memcmp.c		\
+						libc/ctype/iscntrl.c		\
+						libc/ctype/isalnum.c		\
+						libc/ctype/isgraph.c		\
+						libc/ctype/isupper.c		\
+						libc/ctype/isprint.c		\
+						libc/ctype/ispunct.c		\
+						libc/ctype/toupper.c		\
+						libc/ctype/tolower.c		\
+						libc/ctype/isdigit.c		\
+						libc/ctype/islower.c		\
+						libc/ctype/isxdigit.c		\
+						libc/ctype/isspace.c		\
+						libc/ctype/isalpha.c		\
 
 GRUB_CFG			:=	grub.cfg
 
@@ -97,7 +129,8 @@ is_multiboot:
 	@if grub-file --is-x86-multiboot $(NAME_BIN); then \
 		/bin/echo -e "${SUCCESS} Multiboot confirmed ${RESET}" ; \
 	else \
-		/bin/echo -e "${ERROR} the file is not multiboot ${RESET}" ; \
+		/bin/echo -e "${ERROR} The file is not multiboot ${RESET}" ; \
+		exit 1 ; \
 	fi
 
 $(NAME_ISO):		$(NAME_BIN) is_multiboot
@@ -106,13 +139,13 @@ $(NAME_ISO):		$(NAME_BIN) is_multiboot
 	@cp $(GRUB_CFG) $(PATH_ISO)/boot/grub/
 	@sed -i 's/__VERSION__/$(VERSION)/g' $(PATH_ISO)/boot/grub/$(GRUB_CFG)
 	@grub-mkrescue -o $@ $(PATH_ISO) >/dev/null 2>&1
-	
+
 	@if [ $$? -eq 0 ]; then \
 		/bin/echo -e "${SUCCESS} ISO created ${RESET}" ; \
 	else \
 		/bin/echo -e "${ERROR} ISO creation failed ${RESET}" ; \
+		exit 1 ; \
 	fi
-
 
 run_curses:			$(NAME_ISO)
 	$(QEMU) -cdrom $(NAME_ISO) -display curses
@@ -120,4 +153,4 @@ run_curses:			$(NAME_ISO)
 run_gtk:			$(NAME_ISO)
 	$(QEMU) -cdrom $(NAME_ISO) -display gtk
 
-.PHONY: all clean fclean re is_multiboot run_curses
+.PHONY: all clean fclean re is_multiboot run_curses run_gtk

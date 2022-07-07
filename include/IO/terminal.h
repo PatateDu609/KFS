@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 enum vga_color
 {
@@ -29,8 +30,9 @@ extern const size_t VGA_HEIGHT;
 
 extern size_t terminal_row;
 extern size_t terminal_column;
-extern uint8_t terminal_color;
 extern uint16_t *terminal_buffer;
+
+extern uint8_t terminal_color;
 
 inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg)
 {
@@ -50,6 +52,6 @@ inline void terminal_setcolor(uint8_t color)
 void terminal_initialize(void);
 
 void terminal_putchar(char c);
-void terminal_write(const char *data, size_t size);
+char terminal_getchar(void);
 
 #endif
