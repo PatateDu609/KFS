@@ -4,12 +4,15 @@ NAME_ISO			=	kfs-${VERSION}.iso
 
 AS					:=	@$(TARGET)-as
 CC					:=	@$(TARGET)-gcc
+LD					:=	@$(TARGET)-ld
+QEMU				:=	@qemu-system-$(TARGET:-elf=)
 ECHO				:=	@/bin/echo -e
 
 PATH_SRC			:=	src
 PATH_OBJ			:=	obj
 PATH_INC			:=	include
 PATH_ISO			:=	iso
+PATH_LIB_GCC		:=	cross-compiler/lib/gcc/i386-elf/12.1.0/
 
 LINKER				:=	$(PATH_SRC)/linker.ld
 
@@ -20,14 +23,16 @@ CFLAGS				:=	-O2 -Wall -Werror -Wextra	\
 						-fno-stack-protector		\
 						-nostdlib					\
 						-nodefaultlibs				\
-
-
+						-I$(PATH_INC)				\
 
 ASFLAGS				:=
-LDFLAGS				:=	-T $(LINKER) $(CFLAGS) -lgcc
+LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -l gcc
 
 BASENAME			:=	kernel.c					\
-						boot.s
+						boot.s						\
+						system/IO/init.c			\
+						system/IO/write.c			\
+						system/CPU/mode.c			\
 
 GRUB_CFG			:=	grub.cfg
 
@@ -77,13 +82,14 @@ ${PATH_OBJ}/%.o:	${PATH_SRC}/%.c
 
 $(NAME_BIN):		$(OBJ)
 	$(ECHO) "${INFO} ${BBLUE}LD${BLUE}\t  $(basename $@)$(RESET)"
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(LD) -o $@ $^ $(LDFLAGS)
 
 clean:
 	@rm -rf $(PATH_OBJ)
 
 fclean: clean
 	@rm -f $(NAME_BIN)
+	@rm -rf $(PATH_ISO)
 
 re:				fclean all
 
@@ -99,6 +105,19 @@ $(NAME_ISO):		$(NAME_BIN) is_multiboot
 	@cp $(NAME_BIN) $(PATH_ISO)/boot/
 	@cp $(GRUB_CFG) $(PATH_ISO)/boot/grub/
 	@sed -i 's/__VERSION__/$(VERSION)/g' $(PATH_ISO)/boot/grub/$(GRUB_CFG)
-	@grub-mkrescue -o $@ $(PATH_ISO)
+	@grub-mkrescue -o $@ $(PATH_ISO) >/dev/null 2>&1
+	
+	@if [ $$? -eq 0 ]; then \
+		/bin/echo -e "${SUCCESS} ISO created ${RESET}" ; \
+	else \
+		/bin/echo -e "${ERROR} ISO creation failed ${RESET}" ; \
+	fi
 
-.PHONY: all clean fclean re is_multiboot
+
+run_curses:			$(NAME_ISO)
+	$(QEMU) -cdrom $(NAME_ISO) -display curses
+
+run_gtk:			$(NAME_ISO)
+	$(QEMU) -cdrom $(NAME_ISO) -display gtk
+
+.PHONY: all clean fclean re is_multiboot run_curses
