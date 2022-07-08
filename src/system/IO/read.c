@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "IO/read.h"
 #include "IO/terminal.h"
 #include "IO/write.h"

@@ -1,7 +1,7 @@
 #ifndef CPU_INTERUPTS_H
 #define CPU_INTERUPTS_H
 
-#include <stdint.h>
+#include "../libc/stdint.h"
 #include <stddef.h>
 
 void outb(uint16_t port, uint8_t value);

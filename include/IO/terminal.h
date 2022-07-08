@@ -1,7 +1,7 @@
 #ifndef IO_TERMINAL_H
 #define IO_TERMINAL_H
 
-#include <stdint.h>
+#include "../libc/stdint.h"
 #include <stddef.h>
 #include <stdbool.h>
 
@@ -50,8 +50,14 @@ inline void terminal_setcolor(uint8_t color)
 }
 
 void terminal_initialize(void);
+void terminal_move(size_t x, size_t y);
 
 void terminal_putchar(char c);
 char terminal_getchar(void);
+
+void enable_cursor(uint8_t start, uint8_t end);
+void disable_cursor(void);
+void move_cursor(uint8_t x, uint8_t y);
+void get_cursor_position(uint8_t *x, uint8_t *y);
 
 #endif

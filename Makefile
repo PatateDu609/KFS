@@ -13,6 +13,7 @@ PATH_OBJ			:=	obj
 PATH_INC			:=	include
 PATH_ISO			:=	iso
 PATH_LIB_GCC		:=	cross-compiler/lib/gcc/i386-elf/12.1.0/
+PATH_LOG			:=	log
 
 LINKER				:=	$(PATH_SRC)/linker.ld
 
@@ -36,7 +37,9 @@ BASENAME			:=	kernel.c					\
 						system/IO/terminal.c		\
 						system/IO/write.c			\
 						system/IO/read.c			\
+						system/IO/cursor.c			\
 						system/CPU/mode.c			\
+						system/CPU/interrupts.c		\
 						\
 						libc/string/strlen.c		\
 						libc/string/strcpy.c		\
@@ -152,5 +155,8 @@ run_curses:			$(NAME_ISO)
 
 run_gtk:			$(NAME_ISO)
 	$(QEMU) -cdrom $(NAME_ISO) -display gtk
+
+run_debug:			$(NAME_ISO)
+	$(QEMU) -cdrom $(NAME_ISO) -display curses -S -s
 
 .PHONY: all clean fclean re is_multiboot run_curses run_gtk

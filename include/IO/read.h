@@ -1,7 +1,7 @@
 #ifndef IO_READ_H
 #define IO_READ_H
 
-#include <stdint.h>
+#include "../libc/stdint.h"
 #include <stddef.h>
 
 #include "terminal.h"

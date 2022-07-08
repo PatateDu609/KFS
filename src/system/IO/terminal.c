@@ -1,4 +1,5 @@
 #include "IO/terminal.h"
+#include "CPU/interrupts.h"
 
 static void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 {
@@ -24,6 +25,7 @@ void terminal_putchar(char c)
 				terminal_row = 0;
 		}
 	}
+	move_cursor(terminal_column, terminal_row);
 }
 
 char terminal_getchar(void)
@@ -32,6 +34,20 @@ char terminal_getchar(void)
 
 	while (!res)
 	{
+		if (inb(0x64) & 0x1)
+		{
+			res = inb(0x60);
+			if (res == '\n')
+				res = '\n';
+		}
 	}
-	return 0;
+	terminal_putchar(res);
+	return res;
+}
+
+void terminal_move(size_t x, size_t y)
+{
+	terminal_column = x;
+	terminal_row = y;
+	move_cursor(terminal_column, terminal_row);
 }
