@@ -34,21 +34,6 @@ extern uint16_t *terminal_buffer;
 
 extern uint8_t terminal_color;
 
-inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg)
-{
-	return fg | bg << 4;
-}
-
-inline uint16_t vga_entry(unsigned char uc, uint8_t color)
-{
-	return (uint16_t)uc | (uint16_t)color << 8;
-}
-
-inline void terminal_setcolor(uint8_t color)
-{
-	terminal_color = color;
-}
-
 void terminal_initialize(void);
 void terminal_move(size_t x, size_t y);
 
@@ -59,5 +44,9 @@ void enable_cursor(uint8_t start, uint8_t end);
 void disable_cursor(void);
 void move_cursor(uint8_t x, uint8_t y);
 void get_cursor_position(uint8_t *x, uint8_t *y);
+
+uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg);
+uint16_t vga_entry(unsigned char uc, uint8_t color);
+void terminal_setcolor(uint8_t color);
 
 #endif

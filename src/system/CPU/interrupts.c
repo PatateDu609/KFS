@@ -1,4 +1,4 @@
-#include "CPU/interrupts.h"
+#include "CPU/port.h"
 
 void outb(uint16_t port, uint8_t value)
 {

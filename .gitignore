@@ -57,3 +57,5 @@ iso
 *.bin
 *.iso
 .vscode
+
+log*

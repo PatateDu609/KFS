@@ -1,11 +1,9 @@
 #include <stdbool.h>
-#include <stdint.h>
 #include <stddef.h>
 
 #include "CPU/mode.h"
 #include "IO/terminal.h"
 #include "IO/write.h"
-#include "IO/read.h"
 
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most likely run into trouble"
@@ -31,11 +29,9 @@ void terminal_motd(void)
 
 int main(void)
 {
-	cli();
-	terminal_initialize();
 	terminal_motd();
 
-	sti();
-	readline(NULL, 0);
+	while (true)
+		asm("hlt");
 	return 0;
 }

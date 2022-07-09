@@ -1,5 +1,5 @@
 #include "IO/terminal.h"
-#include "CPU/interrupts.h"
+#include "CPU/port.h"
 
 void enable_cursor(uint8_t start, uint8_t end)
 {

@@ -1,5 +1,5 @@
 #include "IO/terminal.h"
-#include "CPU/interrupts.h"
+#include "CPU/port.h"
 
 static void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 {

@@ -1,5 +1,5 @@
 #include "IO/terminal.h"
-#include "CPU/interrupts.h"
+#include "CPU/port.h"
 
 const size_t VGA_WIDTH = 80;
 const size_t VGA_HEIGHT = 25;
