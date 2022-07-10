@@ -12,5 +12,5 @@ uint16_t vga_entry(unsigned char uc, uint8_t color)
 
 void terminal_setcolor(uint8_t color)
 {
-	terminal_color = color;
+	terminal[term_cur].color = color;
 }

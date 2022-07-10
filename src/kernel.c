@@ -14,24 +14,12 @@
 #error "You must compile for i386"
 #endif
 
-void terminal_motd(void)
-{
-	terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK));
-	terminal_writestring("        :::      :::::::::\n");
-	printk("       :+:      :+:    :+:\n");
-	printk("     +:+ +:+         +:+  \n");
-	printk("   +#+  +:+       +#+     \n");
-	printk(" +#+#+#+#+#+   +#+        \n");
-	printk("      #+#    #+#          \n");
-	printk("     ###   ########.kfs   ");
-	terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_BLUE, VGA_COLOR_BLACK));
-	terminal_writestring("By gboucett\n\n");
-}
-
 int main(void)
 {
 	terminal_motd();
-	printk("%c %s for KFS %u\n", 'A', "Basical prompt", 10);
+
+	prompt = true;
+	terminal_prompt();
 
 	while (true)
 		asm("hlt");

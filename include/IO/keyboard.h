@@ -26,6 +26,13 @@
 #define F10 209
 #define F11 210
 #define F12 211
+#define IS_F(key) (key >= F1 && key <= F12)
+#define GET_F(key) (key - F1) // Get the number of the function key.
+
+#define UP 150
+#define DOWN 151
+#define LEFT 152
+#define RIGHT 153
 
 #define EXT 129
 #define NOT_FOUND 255

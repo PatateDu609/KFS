@@ -1,6 +1,5 @@
 #include "IO/keyboard.h"
-
-
+#include <stdbool.h>
 
 // Scan codes for the keyboard (set 1).
 static unsigned char PRESSED_SC[] = {
@@ -29,11 +28,29 @@ static unsigned char PRESSED_SC[] = {
 	[0x3B] = F1, [0x3C] = F2, [0x3D] = F3, [0x3E] = F4, [0x3F] = F5,
 	[0x40] = F6, [0x41] = F7, [0x42] = F8, [0x43] = F9, [0x44] = F10,
 	[0x57] = F11, [0x58] = F12,
+	// TODO: Add keypad support.
+};
+
+static unsigned char PRESSED_EXT_SC[] = {
+	// Control
+	[0x1D] = CTRL_R, [0x38] = ALT_R, [0x53] = 127,
+	// Arrows
+	[0x48] = UP, [0x50] = DOWN, [0x4B] = LEFT, [0x4D] = RIGHT,
 };
 
 unsigned char getch(int keycode)
 {
-	if (PRESSED_SC[keycode])
-		return PRESSED_SC[keycode];
+	static bool extended = false;
+	unsigned char key = extended ? PRESSED_EXT_SC[keycode] : PRESSED_SC[keycode];
+
+	if (key == EXT && !extended)
+	{
+		extended = true;
+		return NOT_FOUND;
+	}
+	if (extended)
+		extended = false;
+	if (key)
+		return key;
 	return NOT_FOUND;
 }
