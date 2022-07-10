@@ -4,6 +4,7 @@
 #include "CPU/mode.h"
 #include "IO/terminal.h"
 #include "IO/write.h"
+#include "IO/printk.h"
 
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most likely run into trouble"
@@ -17,12 +18,12 @@ void terminal_motd(void)
 {
 	terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK));
 	terminal_writestring("        :::      :::::::::\n");
-	terminal_writestring("       :+:      :+:    :+:\n");
-	terminal_writestring("     +:+ +:+         +:+  \n");
-	terminal_writestring("   +#+  +:+       +#+     \n");
-	terminal_writestring(" +#+#+#+#+#+   +#+        \n");
-	terminal_writestring("      #+#    #+#          \n");
-	terminal_writestring("     ###   ########.kfs   ");
+	printk("       :+:      :+:    :+:\n");
+	printk("     +:+ +:+         +:+  \n");
+	printk("   +#+  +:+       +#+     \n");
+	printk(" +#+#+#+#+#+   +#+        \n");
+	printk("      #+#    #+#          \n");
+	printk("     ###   ########.kfs   ");
 	terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_BLUE, VGA_COLOR_BLACK));
 	terminal_writestring("By gboucett\n\n");
 }
@@ -30,6 +31,7 @@ void terminal_motd(void)
 int main(void)
 {
 	terminal_motd();
+	printk("%c %s for KFS %u\n", 'A', "Basical prompt", 10);
 
 	while (true)
 		asm("hlt");
