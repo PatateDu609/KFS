@@ -1,48 +1,50 @@
-.set ALIGN,			1 << 0
-.set MEMINFO,		1 << 1
-.set FLAGS,			ALIGN | MEMINFO
-.set MAGIC,			0x1BADB002
-.set CHECKSUM,		-(MAGIC + FLAGS)
+bits 32
 
-.section			.multiboot
-.align				4
-.long				MAGIC
-.long				FLAGS
-.long				CHECKSUM
+%define ALIGN			1 << 0
+%define MEMINFO			1 << 1
+%define FLAGS			ALIGN | MEMINFO
+%define MAGIC			0x1BADB002
+%define CHECKSUM		-(MAGIC + (FLAGS))
+
+section				.multiboot
+	align			4
+	dd				MAGIC
+	dd				FLAGS
+	dd				CHECKSUM
 
 
 
-.section			.bss
-.align				16
-
-stack_bottom:
-	.skip			16384				# 16KiB
-
+section				.bss
+resb				16384 ; 16MB of stack space
+align				16
 stack_top:
 
 
 
-.section			.text
-.global				_start
-.type				_start, @function
+section				.text
+global				_start
 
-.extern				main
-.extern				terminal_initialize
+extern				main
+extern				terminal_initialize
+extern				init_gdt
+extern				init_idt
+extern				init_pic
 
 _start:
-	mov				$stack_top, %esp
+	mov				esp, stack_top
 	call			init
 
-	mov				$stack_top, %esp
-	call			main				# call main()
+	call			main				; call main()
 
 	cli
-1:	hlt
-	jmp				1b
+	hlt
 
 init:
-	cli
+	cli									; clear interrupts
+	call			init_gdt
+	call			init_pic
+	call			init_idt
 	call			terminal_initialize
 
-
-.size				_start, . - _start
+	sti 								; enable interrupts
+	ret

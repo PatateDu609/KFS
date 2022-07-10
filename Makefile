@@ -2,7 +2,7 @@ VERSION				=	0.1.0
 NAME_BIN			=	kfs-${VERSION}.bin
 NAME_ISO			=	kfs-${VERSION}.iso
 
-AS					:=	@$(TARGET)-as
+AS					:=	@nasm
 CC					:=	@$(TARGET)-gcc
 LD					:=	@$(TARGET)-ld
 QEMU				:=	@qemu-system-$(TARGET:-elf=)
@@ -26,11 +26,19 @@ CFLAGS				:=	-Wall -Werror -Wextra 			\
 						-I$(PATH_INC)					\
 						-I$(PATH_INC)/libc				\
 
-ASFLAGS				:=
-LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -l gcc
+ASFLAGS				:=	-f elf32 -g -F dwarf
+LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc
 
 BASENAME			:=	kernel.c						\
 						system/boot/boot.s				\
+						system/boot/pic.s				\
+						system/boot/GDT/load.s			\
+						system/boot/GDT/init.c			\
+						system/boot/IDT/load.s			\
+						system/boot/IDT/init.c			\
+						system/boot/IDT/isr.c			\
+						system/boot/IDT/irq.c			\
+						system/boot/IDT/wrappers.c		\
 						system/IO/init.c				\
 						system/IO/terminal.c			\
 						system/IO/write.c				\
