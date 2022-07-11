@@ -56,6 +56,12 @@
 
 #define KMCS 0x08 // Kernel Mode, Code Segment
 
+
+#define GET_STACK_POINTER(x) \
+	asm("mov %%esp, %0" : "=r" (x));
+#define GET_STACK_FRAME(x) \
+	asm("mov %%ebp, %0" : "=r" (x));
+
 struct gdtr
 {
 	uint16_t limit;
@@ -63,5 +69,7 @@ struct gdtr
 } __attribute__((packed));
 
 void load_gdt(struct gdtr *gdt);
+
+void print_stack(void *sp, void *sf);
 
 #endif

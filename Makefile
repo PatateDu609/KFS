@@ -34,6 +34,7 @@ BASENAME			:=	kernel.c								\
 						system/boot/pic.s						\
 						system/boot/GDT/load.s					\
 						system/boot/GDT/init.c					\
+						system/boot/GDT/print_stack.c			\
 						system/boot/IDT/load.s					\
 						system/boot/IDT/init.c					\
 						system/boot/IDT/isr.c					\
@@ -48,6 +49,13 @@ BASENAME			:=	kernel.c								\
 						system/IO/printk/printk.c				\
 						system/CPU/mode.c						\
 						system/CPU/interrupts.c					\
+						\
+						nanoshell/commands.c					\
+						nanoshell/shell.c						\
+						nanoshell/commands/reboot.c				\
+						nanoshell/commands/shutdown.c			\
+						nanoshell/commands/halt.c				\
+						nanoshell/commands/stack.c				\
 						\
 						libc/string/strlen.c					\
 						libc/string/strcpy.c					\

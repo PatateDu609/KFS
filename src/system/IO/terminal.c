@@ -4,8 +4,11 @@
 #include "IO/keyboard.h"
 #include <string.h>
 #include <ctype.h>
+#include "nanoshell/shell.h"
 
 static size_t PS1_end = 0;
+static char command[COMMAND_LENGTH_MAX];
+static int index = 0;
 
 static void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 {
@@ -63,7 +66,27 @@ static void terminal_screen(unsigned char c)
 void terminal_entry(unsigned char c)
 {
 	if (isprint(c) || c == '\n' || c == '\b')
+	{
+		if (c == '\n')
+		{
+			command[index] = '\0';
+			prompt = false;
+			terminal_putchar('\n');
+			execute(command);
+			prompt = true;
+			terminal_prompt();
+			index = 0;
+			return ;
+		}
+		else if (c != '\n' && c != '\b')
+			command[index++] = c;
+		else if (c == '\b')
+		{
+			if (index > 0)
+				index--;
+		}
 		terminal_putchar(c);
+	}
 	if (c == UP || c == DOWN || c == LEFT || c == RIGHT)
 		terminal_update_cursor(c);
 	if (IS_F(c))

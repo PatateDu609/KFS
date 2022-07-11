@@ -87,6 +87,12 @@ int print_hex(va_list *args)
 	return i;
 }
 
+int print_pointer(va_list *arg)
+{
+	terminal_writestring("0x");
+	return print_hex(arg) + 2;
+}
+
 static format_t formats[] = {
 	{'c', print_char},
 	{'%', print_percent},
@@ -94,6 +100,7 @@ static format_t formats[] = {
 	{'u', print_uint},
 	{'d', print_int},
 	{'x', print_hex},
+	{'p', print_pointer},
 };
 
 int printk(const char *format, ...)

@@ -13,15 +13,20 @@ uint16_t *terminal_buffer = (uint16_t *)0xB8000;
 void terminal_motd(void)
 {
 	terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK));
-	terminal_writestring("        :::      :::::::::\n");
-	printk("       :+:      :+:    :+:\n");
-	printk("     +:+ +:+         +:+  \n");
-	printk("   +#+  +:+       +#+     \n");
-	printk(" +#+#+#+#+#+   +#+        \n");
-	printk("      #+#    #+#          \n");
-	printk("     ###   ########.kfs   ");
-	terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_BLUE, VGA_COLOR_BLACK));
-	terminal_writestring("By gboucett\n\n");
+	if (!term_cur)
+	{
+		printk("        :::      :::::::::\n");
+		printk("       :+:      :+:    :+:\n");
+		printk("     +:+ +:+         +:+  \n");
+		printk("   +#+  +:+       +#+     \n");
+		printk(" +#+#+#+#+#+   +#+        \n");
+		printk("      #+#    #+#          \n");
+		printk("     ###   ########.kfs   ");
+		terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_BLUE, VGA_COLOR_BLACK));
+		printk("By gboucett\n\n");
+	}
+	terminal_setcolor(vga_entry(VGA_COLOR_LIGHT_CYAN, VGA_COLOR_BLACK));
+	printk("This is TTY%d\n\n", term_cur);
 }
 
 void terminal_initialize(void)
