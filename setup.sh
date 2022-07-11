@@ -15,7 +15,7 @@ fi
 
 THREADS=`nproc`
 
-sudo apt install libmpc-dev libgmp3-dev libmpfr-dev texinfo bison flex build-essential libisl-dev
+sudo apt install libmpc-dev libgmp3-dev libmpfr-dev texinfo bison flex build-essential libisl-dev nasm
 
 rm -rf $PREFIX
 mkdir -p $PREFIX/{src,bin,lib,include}
