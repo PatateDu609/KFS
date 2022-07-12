@@ -103,11 +103,8 @@ static format_t formats[] = {
 	{'p', print_pointer},
 };
 
-int printk(const char *format, ...)
+int vprintk(const char *format, va_list args)
 {
-	va_list args;
-	va_start(args, format);
-
 	int ret = 0;
 	if (format == NULL)
 		return -1;
@@ -140,6 +137,15 @@ int printk(const char *format, ...)
 		}
 		format++;
 	}
+	return ret;
+}
+
+int printk(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+
+	int ret = vprintk(format, args);
 
 	va_end(args);
 	return ret;

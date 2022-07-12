@@ -27,7 +27,7 @@ struct idt_ptr
 
 void load_idt(struct idt_ptr *idtr);
 
-__noreturn void exception_handler(void);
+void exception_handler(int vec);
 
 void keyboard_handler(void);
 

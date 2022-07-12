@@ -1,4 +1,4 @@
-VERSION				=	0.1.0
+VERSION				=	0.3.0
 NAME_BIN			=	kfs-${VERSION}.bin
 NAME_ISO			=	kfs-${VERSION}.iso
 
@@ -30,6 +30,7 @@ ASFLAGS				:=	-f elf32 -g -F dwarf
 LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc
 
 BASENAME			:=	kernel.c								\
+						system/panic.c							\
 						system/boot/boot.s						\
 						system/boot/pic.s						\
 						system/boot/GDT/load.s					\

@@ -10,6 +10,7 @@
 // #define KERN_DEBUG "KERN_DEBUG"
 
 int printk(const char *fmt, ...);
+int vprintk(const char *fmt, va_list args);
 
 // int pr_err(const char *fmt, ...);
 // int pr_warn(const char *fmt, ...);
