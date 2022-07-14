@@ -5,7 +5,7 @@
 #include "IO/write.h"
 #include "utils.h"
 
-typedef int (*fmt_func)(va_list *args);
+typedef int (*fmt_func)(va_list *args, directive_args_t *fmt);
 
 typedef struct format
 {
@@ -13,95 +13,27 @@ typedef struct format
 	fmt_func func;
 } format_t;
 
-int print_char(va_list *args)
-{
-	char c = va_arg(*args, int);
-	terminal_putchar(c);
-	return 1;
-}
-
-int print_percent(__unused va_list *args)
-{
-	terminal_putchar('%');
-	return 1;
-}
-
-int print_string(va_list *args)
-{
-	const char *str = va_arg(*args, const char *);
-	size_t len = strlen(str);
-	terminal_write(str, len);
-	return len;
-}
-
-int print_uint(va_list *args)
-{
-	uint32_t value = va_arg(*args, uint32_t);
-	char buffer[20];
-	uint32_to_str(value, buffer, 20);
-	size_t len = strlen(buffer);
-	terminal_write(buffer, len);
-	return len;
-}
-
-int print_int(va_list *args)
-{
-	int32_t value = va_arg(*args, int32_t);
-	char buffer[20];
-	int32_to_str(value, buffer, 20);
-	size_t len = strlen(buffer);
-	terminal_write(buffer, len);
-	return len;
-}
-
-int print_hex(va_list *args)
-{
-	uint32_t value = va_arg(*args, uint32_t);
-	char buffer[20];
-
-	size_t i = 0;
-	while (value > 0)
-	{
-		uint8_t c = value & 0xF;
-		if (c < 10)
-		{
-			buffer[i++] = '0' + c;
-		}
-		else
-		{
-			buffer[i++] = 'A' + (c - 10);
-		}
-		value >>= 4;
-	}
-	buffer[i] = '\0';
-	// Reverse the string
-	for (size_t j = 0; j < i / 2; j++)
-	{
-		char tmp = buffer[j];
-		buffer[j] = buffer[i - j - 1];
-		buffer[i - j - 1] = tmp;
-	}
-
-	terminal_write(buffer, i);
-
-	return i;
-}
-
-int print_pointer(va_list *arg)
-{
-	terminal_writestring("0x");
-	return print_hex(arg) + 2;
-}
-
 static format_t formats[] = {
-	{'c', print_char},
 	{'%', print_percent},
-	{'s', print_string},
-	{'u', print_uint},
 	{'d', print_int},
 	{'x', print_hex},
+	{'o', print_octal},
+	{'t', print_binary},
+	{'b', print_bool},
+	{'u', print_uint},
+	{'s', print_string},
+	{'c', print_char},
 	{'p', print_pointer},
 };
+
+static void setup_fmt(const char **format, directive_args_t *fmt, va_list *args)
+{
+	printk_parse_fmt(format, fmt);
+	if (fmt->fwidth == 1 && fmt->width == -1)
+		fmt->width = va_arg(*args, int);
+	if (fmt->fprecision == 1 && fmt->precision == -1)
+		fmt->precision = va_arg(*args, int);
+}
 
 int vprintk(const char *format, va_list args)
 {
@@ -120,12 +52,15 @@ int vprintk(const char *format, va_list args)
 		if (*format == '%')
 		{
 			format++;
+			directive_args_t fmt;
+			setup_fmt(&format, &fmt, &args);
+
 			size_t max = sizeof(formats) / sizeof(format_t);
 			for (size_t i = 0; i < max; i++)
 			{
-				if (*format == formats[i].s)
+				if (fmt.type == formats[i].s)
 				{
-					ret += formats[i].func(&args);
+					ret += formats[i].func(&args, &fmt);
 					break;
 				}
 			}
@@ -134,8 +69,8 @@ int vprintk(const char *format, va_list args)
 		{
 			terminal_putchar(*format);
 			ret++;
+			format++;
 		}
-		format++;
 	}
 	return ret;
 }
@@ -146,6 +81,40 @@ int printk(const char *format, ...)
 	va_start(args, format);
 
 	int ret = vprintk(format, args);
+
+	va_end(args);
+	return ret;
+}
+
+int vsprintf(__unused char *buffer, __unused const char *format, __unused va_list args)
+{
+	// TODO: Implement
+	return -1;
+}
+
+int sprintf(char *buffer, const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+
+	int ret = vsprintf(buffer, format, args);
+
+	va_end(args);
+	return ret;
+}
+
+int vsnprintf(__unused char *buffer, __unused size_t size, __unused const char *format, __unused va_list args)
+{
+	// TODO: Implement
+	return -1;
+}
+
+int snprintf(__unused char *buffer, __unused size_t size, __unused const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+
+	int ret = vsnprintf(buffer, size, format, args);
 
 	va_end(args);
 	return ret;

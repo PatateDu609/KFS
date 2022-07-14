@@ -5,7 +5,7 @@
 #include "IO/terminal.h"
 
 #if defined(__linux__)
-#error "You are not using a cross-compiler, you will most likely run into trouble"
+#warning "You are not using a cross-compiler, you will most likely run into trouble"
 #endif
 
 #if !defined(__i386__)

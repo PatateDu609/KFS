@@ -7,7 +7,7 @@ uint64_t str_to_uint64(const char *str)
 	while (*str)
 	{
 		if (*str < '0' || *str > '9')
-			return 0;
+			break ;
 
 		result *= 10;
 		result += *str - '0';

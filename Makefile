@@ -30,6 +30,7 @@ ASFLAGS				:=	-f elf32 -g -F dwarf
 LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc
 
 BASENAME			:=	kernel.c								\
+						multiboot.c								\
 						system/panic.c							\
 						system/boot/boot.s						\
 						system/boot/pic.s						\
@@ -48,6 +49,17 @@ BASENAME			:=	kernel.c								\
 						system/IO/colors.c						\
 						system/IO/keyboard.c					\
 						system/IO/printk/printk.c				\
+						system/IO/printk/formats/binary.c		\
+						system/IO/printk/formats/bool.c			\
+						system/IO/printk/formats/char.c			\
+						system/IO/printk/formats/hex.c			\
+						system/IO/printk/formats/int.c			\
+						system/IO/printk/formats/octal.c		\
+						system/IO/printk/formats/percent.c		\
+						system/IO/printk/formats/pointer.c		\
+						system/IO/printk/formats/string.c		\
+						system/IO/printk/formats/uint.c			\
+						system/IO/printk/parsing.c				\
 						system/CPU/mode.c						\
 						system/CPU/interrupts.c					\
 						\

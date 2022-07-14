@@ -16,7 +16,7 @@ isr_stub_%+%1:
 	iret
 %endmacro
 
-section text
+section .text
 extern exception_handler
 
 isr_no_err_stub 0

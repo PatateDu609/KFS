@@ -13,6 +13,19 @@ enum Type
 	INTERRUPT,
 };
 
+// Refer to the following link for the meaning of the fields:
+// https://wiki.osdev.org/Exceptions#Selector_Error_Code
+union selector_error_code {
+	struct {
+		uint32_t e:1;
+		uint32_t tbl:2;
+		uint32_t index:13;
+
+		uint32_t reserved:16; // reserved for future use (must not be used)
+	};
+	uint32_t raw;
+};
+
 struct
 {
 	enum Type type;
@@ -35,7 +48,7 @@ struct
 	{FAULT, 10, "Invalid TSS", true, -1},
 	{FAULT, 11, "Segment Not Present", true, -1},
 	{FAULT, 12, "Stack Fault", true, -1},
-	{FAULT, 13, "General Protection Fault", true, SIGSEGV},
+	{ABORT, 13, "General Protection Fault", true, SIGSEGV}, // Should be FAULT, will be fixed in the future
 	{FAULT, 14, "Page Fault", true, SIGSEGV},
 	{FAULT, 16, "x87 FPU Floating-Point Error", false, SIGFPE},
 	{FAULT, 17, "Alignment Check", true, -1},
@@ -56,10 +69,24 @@ void exception_handler(int vec)
 		if (isr_err[i].vec == vec)
 		{
 			if (isr_err[i].type != ABORT)
-				printk("%s\n", isr_err[i].desc);
+			{
+				if (isr_err[i].need_error)
+				{
+					int err;
+					union selector_error_code sec;
+					// Read error code from the stack
+					asm volatile("mov 0x4(%%ebp), %0" : "=r"(err));
+					sec.raw = err;
+					printk("%s: raw = %x, e = %d, tbl = %x, index = %d\n", isr_err[i].desc, err, sec.e, sec.tbl, sec.index);
+				}
+				else
+					printk("%s\n", isr_err[i].desc);
+				return;
+			}
 			else
 				kpanic("%s", isr_err[i].desc);
 			break;
 		}
 	}
+	kpanic("Unknown Exception");
 }
