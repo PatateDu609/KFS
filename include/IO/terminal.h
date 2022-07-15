@@ -55,6 +55,7 @@ void terminal_initialize(void);
 void terminal_motd(void);
 void terminal_move(size_t x, size_t y);
 
+void terminal_clear(void);
 void terminal_entry(unsigned char c);
 void terminal_putchar(char c);
 

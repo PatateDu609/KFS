@@ -167,3 +167,16 @@ void terminal_move(size_t x, size_t y)
 	terminal[term_cur].row = y;
 	move_cursor(terminal[term_cur].column, terminal[term_cur].row);
 }
+
+void terminal_clear(void)
+{
+	for (size_t y = 0; y < VGA_HEIGHT; y++)
+		for (size_t x = 0; x < VGA_WIDTH; x++)
+			terminal_putentryat(' ', terminal[term_cur].color, x, y);
+
+	terminal[term_cur].column = 0;
+	terminal[term_cur].row = 0;
+	terminal[term_cur].multiline = 0;
+	PS1_end = strlen(PS1);
+	move_cursor(terminal[term_cur].column, terminal[term_cur].row);
+}

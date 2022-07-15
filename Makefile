@@ -63,12 +63,13 @@ BASENAME			:=	kernel.c								\
 						system/CPU/mode.c						\
 						system/CPU/interrupts.c					\
 						\
-						nanoshell/commands.c					\
 						nanoshell/shell.c						\
 						nanoshell/commands/reboot.c				\
 						nanoshell/commands/shutdown.c			\
 						nanoshell/commands/halt.c				\
 						nanoshell/commands/stack.c				\
+						nanoshell/commands/clear.c				\
+						nanoshell/commands/lsmmap.c				\
 						\
 						libc/string/strlen.c					\
 						libc/string/strcpy.c					\
@@ -204,7 +205,7 @@ $(NAME_ISO):		$(NAME_BIN) is_multiboot
 	fi
 
 run_curses:			$(NAME_ISO)
-	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display curses
+	$(QEMU) -m 1G -D ./log.txt -cdrom $(NAME_ISO) -display curses
 
 run_dist_monitor:		$(NAME_ISO)
 	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display curses -monitor telnet:localhost:1234,server,nowait

@@ -46,12 +46,3 @@ int print_hex(va_list *args, directive_args_t *fmt)
 
 	return printk_putstr(buffer, fmt, true);
 }
-
-/*
-	base_addr = 0x0, length = 0x9fc00, available RAM
-	base_addr = 0x9fc00, length = 0x400, reserved RAM
-	base_addr = 0xf0000, length = 0x10000, reserved RAM
-	base_addr = 0x100000, length = 0x7ee0000, available RAM
-	base_addr = 0x7fe0000, length = 0x20000, reserved RAM
-	base_addr = 0xfffc0000, length = 0x40000, reserved RAM
-*/

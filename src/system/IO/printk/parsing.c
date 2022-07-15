@@ -82,7 +82,7 @@ static int parse_width(directive_args_t *fmt, int *mode, const char **str)
 	if (**str == '*')
 	{
 		fmt->width = -1;
-		(*str)++;
+		// (*str)++;
 	}
 	else
 	{
@@ -109,7 +109,7 @@ static int parse_precision(directive_args_t *fmt, int *mode, const char **str)
 	if (**str == '*')
 	{
 		fmt->precision = -1;
-		(*str)++;
+		// (*str)++;
 	}
 	else
 	{
