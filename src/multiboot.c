@@ -1,4 +1,4 @@
-#include "memory/probe.h"
+#include "multiboot.h"
 #include <stdint.h>
 #include <stddef.h>
 #include "IO/terminal.h"

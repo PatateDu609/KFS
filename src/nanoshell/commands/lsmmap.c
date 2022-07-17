@@ -1,7 +1,9 @@
 #include "nanoshell/shell.h"
-#include "memory/probe.h"
+#include "multiboot.h"
 #include "IO/printk.h"
 #include "utils.h"
+
+extern multiboot_info_t *_mbd;
 
 void lsmmap(__unused char *arg)
 {

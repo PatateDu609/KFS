@@ -1,5 +1,6 @@
 VERSION				=	0.3.0
 NAME_BIN			=	kfs-${VERSION}.bin
+NAME_DBG			=	kfs-${VERSION}.dbg
 NAME_ISO			=	kfs-${VERSION}.iso
 
 AS					:=	@nasm
@@ -23,11 +24,13 @@ CFLAGS				:=	-Wall -Werror -Wextra 			\
 						-std=gnu99						\
 						-nostdlib						\
 						-nodefaultlibs					\
+						-ffunction-sections				\
+						-fdata-sections					\
 						-I$(PATH_INC)					\
 						-I$(PATH_INC)/libc				\
 
 ASFLAGS				:=	-f elf32 -g -F dwarf
-LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc
+LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc --gc-sections
 
 BASENAME			:=	kernel.c								\
 						multiboot.c								\
@@ -42,6 +45,7 @@ BASENAME			:=	kernel.c								\
 						system/boot/IDT/isr.c					\
 						system/boot/IDT/irq.c					\
 						system/boot/IDT/wrappers.c				\
+						system/boot/Paging/load.s				\
 						system/IO/init.c						\
 						system/IO/terminal.c					\
 						system/IO/write.c						\
@@ -190,7 +194,7 @@ is_multiboot:
 		exit 1 ; \
 	fi
 
-$(NAME_ISO):		$(NAME_BIN) is_multiboot
+$(NAME_ISO):		optimize_size $(GRUB_CFG) is_multiboot
 	@mkdir -p $(PATH_ISO)/boot/grub
 	@cp $(NAME_BIN) $(PATH_ISO)/boot/
 	@cp $(GRUB_CFG) $(PATH_ISO)/boot/grub/
@@ -221,5 +225,11 @@ debug:
 
 monitor:
 	@telnet localhost 1234
+
+optimize_size:		$(NAME_BIN)
+	@/bin/echo -e "${INFO} Optimizing size ${RESET}"
+	@objcopy --only-keep-debug $(NAME_BIN) $(NAME_DBG) >/dev/null 2>&1
+	@objcopy --strip-unneeded $(NAME_BIN) >/dev/null 2>&1
+	@objcopy --add-gnu-debuglink=$(NAME_DBG) $(NAME_BIN) >/dev/null 2>&1
 
 .PHONY: all clean fclean re is_multiboot run_curses run_gtk

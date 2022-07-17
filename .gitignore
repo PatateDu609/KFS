@@ -41,6 +41,7 @@
 *.su
 *.idb
 *.pdb
+*.dbg
 
 # Kernel Module Compile Results
 *.mod*
@@ -59,3 +60,4 @@ iso
 .vscode
 
 log*
+*.sw?

@@ -49,6 +49,6 @@ init:
 
 
 section				.bss
-	resb				16384 ; 16MB of stack space
+	resb				16384			; 16MB of stack space
 	align				16
 	stack_top:

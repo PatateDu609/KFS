@@ -1,27 +1,37 @@
 ENTRY(_start)
 
+PHDRS
+{
+	text PT_LOAD FILEHDR;
+	readonly PT_LOAD;
+	data PT_LOAD;
+}
+
 SECTIONS
 {
 	. = 1M;
+	start = .;
 
 	.text BLOCK(4K) : ALIGN(4K)
 	{
-		*(.multiboot)
-		*(.text)
-	}
+		KEEP(*(.multiboot))
+		*(.text*)
+	} :text
 
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
-		*(.rodata)
-	}
+		*(.rodata*)
+	} :readonly
 
 	.data BLOCK(4K) : ALIGN(4K)
 	{
-		*(.data)
-	}
+		*(.data*)
+	} :data
 
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
-		*(.bss)
-	}
+		*(.bss*)
+	} :data
+
+	end = .; /* end of kernel */
 }
