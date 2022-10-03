@@ -36,6 +36,7 @@ BASENAME			:=	kernel.c								\
 						multiboot.c								\
 						system/panic.c							\
 						system/boot/boot.s						\
+						system/boot/multiboot.s					\
 						system/boot/pic.s						\
 						system/boot/GDT/load.s					\
 						system/boot/GDT/init.c					\
@@ -46,6 +47,7 @@ BASENAME			:=	kernel.c								\
 						system/boot/IDT/irq.c					\
 						system/boot/IDT/wrappers.c				\
 						system/boot/Paging/load.s				\
+						system/boot/Paging/init_physical.c		\
 						system/IO/init.c						\
 						system/IO/terminal.c					\
 						system/IO/write.c						\
@@ -175,26 +177,27 @@ ${PATH_OBJ}/%.o:	${PATH_SRC}/%.c
 
 $(NAME_BIN):		$(OBJ)
 	$(ECHO) "${INFO} ${BBLUE}LD${BLUE}\t  $(basename $@)$(RESET)"
+	@rm -f $(NAME_DBG)
 	$(LD) -o $@ $^ $(LDFLAGS)
 
 clean:
 	@rm -rf $(PATH_OBJ)
 
 fclean: clean
-	@rm -f $(NAME_BIN)
+	@rm -f $(NAME_BIN) $(NAME_ISO) $(NAME_DBG)
 	@rm -rf $(PATH_ISO)
 
 re:				fclean all
 
 is_multiboot:
-	@if grub-file --is-x86-multiboot $(NAME_BIN); then \
-		/bin/echo -e "${SUCCESS} Multiboot confirmed ${RESET}" ; \
+	@if grub-file --is-x86-multiboot2 $(NAME_BIN); then \
+		/bin/echo -e "${SUCCESS} Multiboot2 confirmed ${RESET}" ; \
 	else \
 		/bin/echo -e "${ERROR} The file is not multiboot ${RESET}" ; \
 		exit 1 ; \
 	fi
 
-$(NAME_ISO):		optimize_size $(GRUB_CFG) is_multiboot
+$(NAME_ISO):		$(NAME_DBG) $(GRUB_CFG) is_multiboot
 	@mkdir -p $(PATH_ISO)/boot/grub
 	@cp $(NAME_BIN) $(PATH_ISO)/boot/
 	@cp $(GRUB_CFG) $(PATH_ISO)/boot/grub/
@@ -226,10 +229,17 @@ debug:
 monitor:
 	@telnet localhost 1234
 
-optimize_size:		$(NAME_BIN)
-	@/bin/echo -e "${INFO} Optimizing size ${RESET}"
-	@objcopy --only-keep-debug $(NAME_BIN) $(NAME_DBG) >/dev/null 2>&1
-	@objcopy --strip-unneeded $(NAME_BIN) >/dev/null 2>&1
-	@objcopy --add-gnu-debuglink=$(NAME_DBG) $(NAME_BIN) >/dev/null 2>&1
+$(NAME_DBG):		$(NAME_BIN)
+	@if [ -f $(NAME_DBG) ]; then \
+		/bin/echo -e "${WARNING} $(NAME_DBG) already exists ${RESET}" ; \
+	else \
+		/bin/echo -e "${INFO} Optimizing size ${RESET}"; \
+		\
+		$(TARGET)-objcopy -R .gnu_debuglink $(NAME_BIN); \
+		$(TARGET)-objcopy --only-keep-debug $(NAME_BIN) $(NAME_DBG); \
+		$(TARGET)-objcopy --strip-all $(NAME_BIN); \
+		$(TARGET)-objcopy --add-gnu-debuglink=$(NAME_DBG) $(NAME_BIN); \
+	fi
 
-.PHONY: all clean fclean re is_multiboot run_curses run_gtk
+
+.PHONY: all clean fclean re is_multiboot run_curses run_gtk run_dist_monitor run_debug debug monitor

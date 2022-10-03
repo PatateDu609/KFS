@@ -1,19 +1,5 @@
 bits 32
 
-%define ALIGN			1 << 0
-%define MEMINFO			1 << 1
-%define FLAGS			ALIGN | MEMINFO
-%define MAGIC			0x1BADB002
-%define CHECKSUM		-(MAGIC + (FLAGS))
-
-section				.multiboot
-	align			4
-	dd				MAGIC
-	dd				FLAGS
-	dd				CHECKSUM
-
-
-
 section				.text
 global				_start
 
@@ -23,6 +9,7 @@ extern				terminal_initialize
 extern				init_gdt
 extern				init_idt
 extern				init_pic
+extern				init_physical
 
 _start:
 	mov				esp, stack_top
@@ -43,6 +30,7 @@ init:
 	call			init_gdt
 	call			init_pic
 	call			init_idt
+	call			init_physical
 
 	sti 								; enable interrupts
 	ret

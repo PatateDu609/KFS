@@ -2,15 +2,16 @@ ENTRY(_start)
 
 PHDRS
 {
-	text PT_LOAD FILEHDR;
+	headers PT_PHDR PHDRS;
+	text PT_LOAD FILEHDR PHDRS;
 	readonly PT_LOAD;
 	data PT_LOAD;
 }
 
 SECTIONS
 {
-	. = 1M;
-	start = .;
+	ld_start = 1M;
+	. = ld_start;
 
 	.text BLOCK(4K) : ALIGN(4K)
 	{
@@ -30,8 +31,9 @@ SECTIONS
 
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
+		*(COMMON*)
 		*(.bss*)
 	} :data
 
-	end = .; /* end of kernel */
+	PROVIDE(ld_end = .);
 }

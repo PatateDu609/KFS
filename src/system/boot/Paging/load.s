@@ -10,19 +10,20 @@ section .text
 ; void enable_paging(int enable_pse)
 enable_paging:
 	pop ebx
-
-	mov eax, cr0
-	or eax, CR0_PAGING
-	mov cr0, eax ; enable paging
-
 	cmp ebx, 0
-	je ep_ret
+
+	je set_paging
 
 	mov eax, cr4
 	or eax, CR4_PSE
 	mov cr4, eax ; enable PSE (4MB pages)
 
-ep_ret:
+set_paging:
+	mov eax, cr0
+	or eax, CR0_PAGING
+	mov cr0, eax ; enable paging
+
+
 	ret
 
 
@@ -34,7 +35,7 @@ disable_paging:
 	ret
 
 
-; void flush_tlb(uint32_t addr)
+; void flush_tlb(uint32_t vaddr)
 flush_tlb:
 	pop ebx
 	invlpg [ebx]

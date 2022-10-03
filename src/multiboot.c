@@ -1,29 +1,33 @@
-#include "multiboot.h"
+#include "multiboot2.h"
 #include <stdint.h>
 #include <stddef.h>
 #include "IO/terminal.h"
 #include "panic.h"
+#include "mem/physical.h"
 
-multiboot_info_t *_mbd;
+mem_mapping_t mapping;
 
-void _preinit(int magic, multiboot_info_t *mbd)
+void _preinit(int magic, uintptr_t addr)
 {
 	terminal_initialize();
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
+
+	if (magic != MULTIBOOT2_BOOTLOADER_MAGIC)
 		kpanic("Invalid magic number: %x", magic);
-	if (!(mbd->flags & MULTIBOOT_INFO_MEM_MAP))
-		kpanic("Invalid memory map provided by grub");
+	if (addr & 7)
+		kpanic("Invalid address: %x", addr);
 
-	for (uint32_t i = 0;
-		 i < mbd->mmap_length;
-		 i += sizeof(multiboot_memory_map_t))
+	struct multiboot_tag *tag = (struct multiboot_tag *)(addr + 8);
+	while (tag->type != MULTIBOOT_TAG_TYPE_END)
 	{
-		multiboot_memory_map_t *mmap = (multiboot_memory_map_t *)(mbd->mmap_addr + i);
-
-		if (!_mbd && mmap->type == MULTIBOOT_MEMORY_AVAILABLE)
-			_mbd = mbd;
+		if (tag->type == MULTIBOOT_TAG_TYPE_MMAP)
+		{
+			mapping.mmap = (struct multiboot_tag_mmap *)tag;
+			mapping.nb = tag->size / mapping.mmap->entry_size;
+			return;
+		}
+		tag = (struct multiboot_tag *)((multiboot_uint8_t *)tag + ((tag->size + 7) & ~7));
 	}
 
-	if (!_mbd)
-		kpanic("No available memory found");
+	// Shouldn't happen
+	kpanic("No memory map found");
 }

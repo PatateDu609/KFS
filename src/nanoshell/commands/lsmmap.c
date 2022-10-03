@@ -1,42 +1,31 @@
 #include "nanoshell/shell.h"
-#include "multiboot.h"
+#include "multiboot2.h"
 #include "IO/printk.h"
 #include "utils.h"
-
-extern multiboot_info_t *_mbd;
+#include "mem/physical.h"
 
 void lsmmap(__unused char *arg)
 {
-	multiboot_info_t *mbd = _mbd;
-
-	uint32_t mb = 1024 * 1024;
-	if (mbd->flags & MULTIBOOT_INFO_MEMORY)
-		printk("Memory lower: %u, Memory upper starts at: %x\n",
-			mbd->mem_lower,
-			mbd->mem_upper + mb);
-
-	size_t inc = sizeof(multiboot_memory_map_t);
 	uint64_t length = 0, avail_length = 0;
 	int col_width = 10;
 
-	printk("%*s | %*s | %*s | %*s |\n",
-		col_width, "Size",
+	printk("%*s | %*s | %*s |\n",
 		col_width, "Address",
 		col_width, "Length",
 		col_width, "Type");
-	for (size_t i = 0; i < mbd->mmap_length; i += inc)
+
+	for (multiboot_uint32_t i = 0; i < mapping.nb; i++)
 	{
-		multiboot_memory_map_t *mmap = (multiboot_memory_map_t *)(mbd->mmap_addr + i);
+		multiboot_memory_map_t *entry = mapping.mmap->entries + i;
 
-		printk("%-*u | %-*gx | %-*gu | %-*t |\n",
-			col_width, mmap->size,
-			col_width, mmap->addr,
-			col_width, mmap->len,
-			col_width, mmap->type);
+		printk("%-*gx | %-*gu | %-*t |\n",
+			col_width, entry->addr,
+			col_width, entry->len,
+			col_width, entry->type);
 
-		length += mmap->len;
-		if (mmap->type == MULTIBOOT_MEMORY_AVAILABLE)
-			avail_length += mmap->len;
+		length += entry->len;
+		if (entry->type == MULTIBOOT_MEMORY_AVAILABLE)
+			avail_length += entry->len;
 	}
 	uint64_t mib_tot = length / 1024 / 1024;
 	uint64_t mib_avail = avail_length / 1024 / 1024;
