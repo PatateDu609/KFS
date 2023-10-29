@@ -230,8 +230,9 @@ run_gtk:			$(NAME_ISO)
 run_cocoa:
 	$(QEMU) -cdrom $(NAME_ISO) -display cocoa
 
-run_debug:			$(NAME_ISO)
-	$(QEMU) -cdrom $(NAME_ISO) -display curses -S -s
+run_debug: 			DISPLAY := curses
+run_debug:
+	$(QEMU) -cdrom $(NAME_ISO) -display $(DISPLAY) -S -s
 
 debug:
 	@gdb -x .gdbinit
