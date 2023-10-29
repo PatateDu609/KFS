@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 VERSION				=	0.3.0
 NAME_BIN			=	kfs-${VERSION}.bin
 NAME_DBG			=	kfs-${VERSION}.dbg
@@ -13,7 +15,7 @@ PATH_SRC			:=	src
 PATH_OBJ			:=	obj
 PATH_INC			:=	include
 PATH_ISO			:=	iso
-PATH_LIB_GCC		:=	cross-compiler/lib/gcc/i386-elf/12.1.0/
+PATH_LIB_GCC		:=	/kfs/cross-compiler/lib/gcc/i386-elf/${GCC_VERSION}/
 PATH_LOG			:=	log
 
 LINKER				:=	$(PATH_SRC)/linker.ld
@@ -136,7 +138,7 @@ OBJ					:=	$(OBJ:.s=.o)
 DEP					:=	$(addprefix $(PATH_OBJ)/, $(BASENAME:.c=.d))
 
 
-################################################################################################################################################################
+########################################################################################################################
 
 RED					:=	\e[0;31m
 GREEN				:=	\e[0;32m
@@ -159,9 +161,12 @@ WARNING				:=	${BYELLOW}⚠$(YELLOW)
 ERROR				:=	${BRED}✗$(RED)
 SUCCESS				:=	${BGREEN}✓$(GREEN)
 
-################################################################################################################################################################
+########################################################################################################################
 
-all:				$(NAME_ISO)
+all:				run
+
+run:
+	@cd docker && source setup.sh && ${MAKE} -C .. $(NAME_ISO) TARGET=$$TARGET GCC_VERSION=$$GCC_VERSION
 
 ${PATH_OBJ}/%.o:	${PATH_SRC}/%.s
 	@mkdir -p $(dir $@)
@@ -189,7 +194,7 @@ fclean: clean
 
 re:				fclean all
 
-is_multiboot:
+is_multiboot: $(NAME_BIN)
 	@if grub-file --is-x86-multiboot2 $(NAME_BIN); then \
 		/bin/echo -e "${SUCCESS} Multiboot2 confirmed ${RESET}" ; \
 	else \

@@ -19,8 +19,8 @@ int printk_putchar(char c, directive_args_t *fmt)
 	return 1 + length;
 }
 
-int print_char(va_list *args, directive_args_t *fmt)
+int print_char(va_list args, directive_args_t *fmt)
 {
-	char c = va_arg(*args, int);
+	char c = va_arg(args, int);
 	return printk_putchar(c, fmt);
 }

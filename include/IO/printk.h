@@ -11,14 +11,14 @@
 #define CAST(args, type, buf, s)					\
 	{												\
 		memset(buf, 0, s);							\
-		type##_t value = va_arg(*args, type##_t);	\
+		type##_t value = va_arg(args, type##_t);	\
 		type##_to_str(value, buf, s);				\
 	}
 
 #define CAST_BASE(args, type, buf, s, base)			\
 	{												\
 		memset(buf, 0, s);							\
-		type##_t value = va_arg(*args, type##_t);	\
+		type##_t value = va_arg(args, type##_t);	\
 		printk_to_str_base(value, buf, s, base);	\
 	}
 
@@ -72,21 +72,21 @@ int vprintk(const char *fmt, va_list args);
 // int pr_info(const char *fmt, ...);
 // int pr_debug(const char *fmt, ...);
 
-int print_char(va_list *args, directive_args_t *fmt);
-int print_percent(va_list *args, directive_args_t *fmt);
-int print_string(va_list *args, directive_args_t *fmt);
-int print_uint(va_list *args, directive_args_t *fmt);
-int print_int(va_list *args, directive_args_t *fmt);
-int print_hex(va_list *args, directive_args_t *fmt);
-int print_pointer(va_list *arg, directive_args_t *fmt);
-int print_bool(va_list *arg, directive_args_t *fmt);
-int print_binary(va_list *arg, directive_args_t *fmt);
-int print_octal(va_list *arg, directive_args_t *fmt);
+int print_char(va_list args, directive_args_t *fmt);
+int print_percent(va_list args, directive_args_t *fmt);
+int print_string(va_list args, directive_args_t *fmt);
+int print_uint(va_list args, directive_args_t *fmt);
+int print_int(va_list args, directive_args_t *fmt);
+int print_hex(va_list args, directive_args_t *fmt);
+int print_pointer(va_list arg, directive_args_t *fmt);
+int print_bool(va_list arg, directive_args_t *fmt);
+int print_binary(va_list arg, directive_args_t *fmt);
+int print_octal(va_list arg, directive_args_t *fmt);
 
 int printk_putchar(char c, directive_args_t *fmt);
 int printk_putstr(const char *str, directive_args_t *fmt, bool integer);
 void printk_to_str_base(uint64_t value, char *buffer, size_t max, char *base);
 
-void setup_buffer_base(va_list *args, uint8_t cast, char *buffer, size_t s, char *base);
+void setup_buffer_base(va_list args, uint8_t cast, char *buffer, size_t s, char *base);
 
 #endif

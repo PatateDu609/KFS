@@ -1,0 +1,15 @@
+services:
+  context:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: ghcr.io/patatedu609/kfs:latest
+    platform: linux/amd64
+
+    working_dir: /kfs
+#    volumes:
+#      - .:/kfs
+
+    command:
+      - sleep
+      - infinity

@@ -45,8 +45,8 @@ int printk_putstr(const char *str, directive_args_t *fmt, bool integer)
 	return len;
 }
 
-int print_string(va_list *args, directive_args_t *fmt)
+int print_string(va_list args, directive_args_t *fmt)
 {
-	const char *str = va_arg(*args, const char *);
+	const char *str = va_arg(args, const char *);
 	return printk_putstr(str, fmt, false); // false = value is not an integer
 }
