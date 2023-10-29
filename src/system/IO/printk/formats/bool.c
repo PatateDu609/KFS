@@ -1,9 +1,9 @@
 #include "IO/printk.h"
 #include <string.h>
 
-int print_bool(va_list arg, directive_args_t *fmt)
+int print_bool(va_list *arg, directive_args_t *fmt)
 {
-	bool value = va_arg(arg, int);
+	bool value = va_arg(*arg, int);
 
 	char buffer[20];
 	if (value)

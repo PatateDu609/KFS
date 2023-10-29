@@ -2,9 +2,9 @@
 #include "utils.h"
 #include <string.h>
 
-int print_pointer(va_list arg, directive_args_t *fmt)
+int print_pointer(va_list *arg, directive_args_t *fmt)
 {
-	uint32_t value = va_arg(arg, uint32_t);
+	uint32_t value = va_arg(*arg, uint32_t);
 	char buffer[22];
 	if (value == 0)
 		memcpy(buffer, "(null)", 7);

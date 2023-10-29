@@ -26,7 +26,7 @@ void printk_to_str_base(uint64_t value, char *buffer, size_t max, char *base)
 	}
 }
 
-void setup_buffer_base(va_list args, uint8_t cast, char *buffer, size_t s, char *base)
+void setup_buffer_base(va_list *args, uint8_t cast, char *buffer, size_t s, char *base)
 {
 	if (cast == PRINTK_CAST_HALFWORD)
 		CAST_BASE(args, uint32, buffer, s, base)
@@ -38,7 +38,7 @@ void setup_buffer_base(va_list args, uint8_t cast, char *buffer, size_t s, char 
 		CAST_BASE(args, uint32, buffer, s, base)
 }
 
-int print_hex(va_list args, directive_args_t *fmt)
+int print_hex(va_list *args, directive_args_t *fmt)
 {
 	char buffer[20];
 	char *base = fmt->type == 'x' ? "0123456789abcdef" : "0123456789ABCDEF";

@@ -7,6 +7,7 @@ typedef struct
 {
 	char *name;
 	void (*handler)(char *args);
+    char *description;
 } command_t;
 
 void halt(char *args);

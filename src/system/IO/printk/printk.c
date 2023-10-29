@@ -5,7 +5,7 @@
 #include "IO/write.h"
 #include "utils.h"
 
-typedef int (*fmt_func)(va_list args, directive_args_t *fmt);
+typedef int (*fmt_func)(va_list *args, directive_args_t *fmt);
 
 typedef struct format
 {
@@ -26,13 +26,13 @@ static format_t formats[] = {
 	{'p', print_pointer},
 };
 
-static void setup_fmt(const char **format, directive_args_t *fmt, va_list args)
+static void setup_fmt(const char **format, directive_args_t *fmt, va_list *args)
 {
 	printk_parse_fmt(format, fmt);
 	if (fmt->fwidth == 1 && fmt->width == -1)
-		fmt->width = va_arg(args, int);
+		fmt->width = va_arg(*args, int);
 	if (fmt->fprecision == 1 && fmt->precision == -1)
-		fmt->precision = va_arg(args, int);
+		fmt->precision = va_arg(*args, int);
 }
 
 int vprintk(const char *format, va_list args)
@@ -53,14 +53,14 @@ int vprintk(const char *format, va_list args)
 		{
 			format++;
 			directive_args_t fmt;
-			setup_fmt(&format, &fmt, args);
+			setup_fmt(&format, &fmt, (va_list *) &args);
 
 			size_t max = sizeof(formats) / sizeof(format_t);
 			for (size_t i = 0; i < max; i++)
 			{
 				if (fmt.type == formats[i].s)
 				{
-					ret += formats[i].func(args, &fmt);
+					ret += formats[i].func((va_list *) &args, &fmt);
 					break;
 				}
 			}

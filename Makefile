@@ -185,6 +185,8 @@ $(NAME_BIN):		$(OBJ)
 	@rm -f $(NAME_DBG)
 	$(LD) -o $@ $^ $(LDFLAGS)
 
+build: $(NAME_BIN)
+
 clean:
 	@rm -rf $(PATH_OBJ)
 
@@ -216,7 +218,7 @@ $(NAME_ISO):		$(NAME_DBG) $(GRUB_CFG) is_multiboot
 		exit 1 ; \
 	fi
 
-run_curses:			$(NAME_ISO)
+run_curses:
 	$(QEMU) -m 1G -D ./log.txt -cdrom $(NAME_ISO) -display curses
 
 run_dist_monitor:		$(NAME_ISO)
@@ -224,6 +226,9 @@ run_dist_monitor:		$(NAME_ISO)
 
 run_gtk:			$(NAME_ISO)
 	$(QEMU) -cdrom $(NAME_ISO) -display gtk
+
+run_cocoa:
+	$(QEMU) -cdrom $(NAME_ISO) -display cocoa
 
 run_debug:			$(NAME_ISO)
 	$(QEMU) -cdrom $(NAME_ISO) -display curses -S -s

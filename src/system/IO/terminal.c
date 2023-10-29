@@ -1,10 +1,11 @@
 #include "IO/terminal.h"
-#include "CPU/port.h"
 #include "IO/write.h"
 #include "IO/keyboard.h"
 #include <string.h>
 #include <ctype.h>
 #include "nanoshell/shell.h"
+
+#define TAB_SIZE 4
 
 static size_t PS1_end = 0;
 static char command[COMMAND_LENGTH_MAX];
@@ -12,8 +13,8 @@ static int index = 0;
 
 static void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 {
-	const size_t index = y * VGA_WIDTH + x;
-	terminal_buffer[index] = vga_entry(c, color);
+	const size_t idx = y * VGA_WIDTH + x;
+	terminal_buffer[idx] = vga_entry(c, color);
 }
 
 void terminal_prompt(void)
@@ -79,13 +80,13 @@ void terminal_entry(unsigned char c)
 			return ;
 		}
 		else if (c != '\n' && c != '\b')
-			command[index++] = c;
+			command[index++] = (char)c;
 		else if (c == '\b')
 		{
 			if (index > 0)
 				index--;
 		}
-		terminal_putchar(c);
+		terminal_putchar((char)c);
 	}
 	if (c == UP || c == DOWN || c == LEFT || c == RIGHT)
 		terminal_update_cursor(c);
@@ -111,6 +112,14 @@ static void terminal_scroll(void)
 	terminal[term_cur].row = VGA_HEIGHT - 1;
 }
 
+static void terminal_manage_multiline(uint8_t new_col) {
+	++terminal[term_cur].multiline;
+	PS1_end = 0;
+	terminal[term_cur].column = new_col;
+	if (++terminal[term_cur].row == VGA_HEIGHT)
+		terminal_scroll();
+}
+
 void terminal_putchar(char c)
 {
 	if (!c)
@@ -121,6 +130,15 @@ void terminal_putchar(char c)
 		terminal[term_cur].column = 0;
 		if (++terminal[term_cur].row == VGA_HEIGHT)
 			terminal_scroll();
+	}
+	else if (c == '\t')
+	{
+		terminal[term_cur].multiline = 0;
+		terminal[term_cur].column += TAB_SIZE;
+		if (terminal[term_cur].column >= VGA_WIDTH)
+		{
+			terminal_manage_multiline(TAB_SIZE);
+		}
 	}
 	else if (c == '\b')
 	{
@@ -148,11 +166,7 @@ void terminal_putchar(char c)
 
 		if (++terminal[term_cur].column == VGA_WIDTH)
 		{
-			++terminal[term_cur].multiline;
-			PS1_end = 0;
-			terminal[term_cur].column = 0;
-			if (++terminal[term_cur].row == VGA_HEIGHT)
-				terminal_scroll();
+			terminal_manage_multiline(0);
 		}
 	}
 	move_cursor(terminal[term_cur].column, terminal[term_cur].row);

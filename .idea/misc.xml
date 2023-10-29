@@ -5,6 +5,7 @@
     <option name="linkedExternalProjectsSettings">
       <MakefileProjectSettings>
         <option name="buildOptions" value="--jobs=10" />
+        <option name="buildTarget" value="build" />
         <option name="cleanTarget" value="fclean" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">

@@ -1,7 +1,6 @@
 #include "IO/printk.h"
 #include <string.h>
 #include <ctype.h>
-#include "utils.h"
 #include <convert/from_str.h>
 
 // Order of the format specifiers:
