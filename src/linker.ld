@@ -31,9 +31,10 @@ SECTIONS
 
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
+		sbss = .;
 		*(COMMON*)
 		*(.bss*)
+		ebss = .;
+		ld_end = .;
 	} :data
-
-	PROVIDE(ld_end = .);
 }

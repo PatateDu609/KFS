@@ -8,8 +8,9 @@ NAME_ISO			=	kfs-${VERSION}.iso
 AS					:=	@nasm
 CC					:=	@$(TARGET)-gcc
 LD					:=	@$(TARGET)-ld
+OBJCOPY				:=	$(TARGET)-objcopy
 QEMU				:=	@qemu-system-$(TARGET:-elf=)
-ECHO				:=	@/bin/echo -e
+PRINTF				:=	@printf
 
 PATH_SRC			:=	src
 PATH_OBJ			:=	obj
@@ -34,100 +35,7 @@ CFLAGS				:=	-Wall -Werror -Wextra 			\
 ASFLAGS				:=	-f elf32 -g -F dwarf
 LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc --gc-sections
 
-BASENAME			:=	kernel.c								\
-						multiboot.c								\
-						system/panic.c							\
-						system/boot/boot.s						\
-						system/boot/multiboot.s					\
-						system/boot/pic.s						\
-						system/boot/GDT/load.s					\
-						system/boot/GDT/init.c					\
-						system/boot/GDT/print_stack.c			\
-						system/boot/IDT/load.s					\
-						system/boot/IDT/init.c					\
-						system/boot/IDT/isr.c					\
-						system/boot/IDT/irq.c					\
-						system/boot/IDT/wrappers.c				\
-						system/boot/Paging/load.s				\
-						system/boot/Paging/init_physical.c		\
-						system/IO/init.c						\
-						system/IO/terminal.c					\
-						system/IO/write.c						\
-						system/IO/cursor.c						\
-						system/IO/colors.c						\
-						system/IO/keyboard.c					\
-						system/IO/printk/printk.c				\
-						system/IO/printk/formats/binary.c		\
-						system/IO/printk/formats/bool.c			\
-						system/IO/printk/formats/char.c			\
-						system/IO/printk/formats/hex.c			\
-						system/IO/printk/formats/int.c			\
-						system/IO/printk/formats/octal.c		\
-						system/IO/printk/formats/percent.c		\
-						system/IO/printk/formats/pointer.c		\
-						system/IO/printk/formats/string.c		\
-						system/IO/printk/formats/uint.c			\
-						system/IO/printk/parsing.c				\
-						system/CPU/mode.c						\
-						system/CPU/interrupts.c					\
-						\
-						nanoshell/shell.c						\
-						nanoshell/commands/reboot.c				\
-						nanoshell/commands/shutdown.c			\
-						nanoshell/commands/halt.c				\
-						nanoshell/commands/stack.c				\
-						nanoshell/commands/clear.c				\
-						nanoshell/commands/lsmmap.c				\
-						\
-						libc/string/strlen.c					\
-						libc/string/strcpy.c					\
-						libc/string/strncpy.c					\
-						libc/string/strcmp.c					\
-						libc/string/strncmp.c					\
-						libc/string/strcat.c					\
-						libc/string/strncat.c					\
-						libc/string/strchr.c					\
-						libc/string/strstr.c					\
-						libc/memory/memset.c					\
-						libc/memory/memmove.c					\
-						libc/memory/memcpy.c					\
-						libc/memory/memchr.c					\
-						libc/memory/memcmp.c					\
-						libc/ctype/iscntrl.c					\
-						libc/ctype/isalnum.c					\
-						libc/ctype/isgraph.c					\
-						libc/ctype/isupper.c					\
-						libc/ctype/isprint.c					\
-						libc/ctype/ispunct.c					\
-						libc/ctype/toupper.c					\
-						libc/ctype/tolower.c					\
-						libc/ctype/isdigit.c					\
-						libc/ctype/islower.c					\
-						libc/ctype/isxdigit.c					\
-						libc/ctype/isspace.c					\
-						libc/ctype/isalpha.c					\
-						libc/convert/to_str/from_int32.c		\
-						libc/convert/to_str/from_uint32.c		\
-						libc/convert/to_str/from_double.c		\
-						libc/convert/to_str/from_float.c		\
-						libc/convert/to_str/from_int8.c			\
-						libc/convert/to_str/from_uint16.c		\
-						libc/convert/to_str/from_uint64.c		\
-						libc/convert/to_str/from_bool.c			\
-						libc/convert/to_str/from_int64.c		\
-						libc/convert/to_str/from_uint8.c		\
-						libc/convert/to_str/from_int16.c		\
-						libc/convert/from_str/to_uint32.c		\
-						libc/convert/from_str/to_uint16.c		\
-						libc/convert/from_str/to_uint64.c		\
-						libc/convert/from_str/to_int64.c		\
-						libc/convert/from_str/to_uint8.c		\
-						libc/convert/from_str/to_double.c		\
-						libc/convert/from_str/to_int8.c			\
-						libc/convert/from_str/to_bool.c			\
-						libc/convert/from_str/to_int32.c		\
-						libc/convert/from_str/to_float.c		\
-						libc/convert/from_str/to_int16.c		\
+include sources.mk
 
 GRUB_CFG			:=	grub.cfg
 
@@ -168,24 +76,24 @@ all:				run
 run:
 	@cd docker && source setup.sh && ${MAKE} -C .. $(NAME_ISO) TARGET=$$TARGET GCC_VERSION=$$GCC_VERSION
 
+-include $(DEP)
+
 ${PATH_OBJ}/%.o:	${PATH_SRC}/%.s
 	@mkdir -p $(dir $@)
-	$(ECHO) "${INFO} ${BBLUE}AS${BLUE}\t  $(subst $(PATH_SRC)/,,$<)$(RESET)"
+	$(PRINTF) "${INFO} ${BBLUE}AS${BLUE}\t  $(subst $(PATH_SRC)/,,$<)$(RESET)\n"
 	$(AS) $(ASFLAGS) $< -o $@
 
 ${PATH_OBJ}/%.o:	${PATH_SRC}/%.c
 	@mkdir -p $(dir $@)
-	$(ECHO) "${INFO} ${BBLUE}CC${BLUE}\t  $(subst $(PATH_SRC)/,,$<)$(RESET)"
+	$(PRINTF) "${INFO} ${BBLUE}CC${BLUE}\t  $(subst $(PATH_SRC)/,,$<)$(RESET)\n"
 	$(CC) $(CFLAGS) -c -MMD $< -o $@
 
--include $(DEP)
+$(NAME_BIN):		$(OBJ) $(LINKER)
+	$(PRINTF) "${INFO} ${BBLUE}LD${BLUE}\t  $(basename $@)$(RESET)\n"
+	rm -f $(NAME_DBG)
+	$(LD) -o $@ $(filter-out $(LINKER),$(OBJ)) $(LDFLAGS)
 
-$(NAME_BIN):		$(OBJ)
-	$(ECHO) "${INFO} ${BBLUE}LD${BLUE}\t  $(basename $@)$(RESET)"
-	@rm -f $(NAME_DBG)
-	$(LD) -o $@ $^ $(LDFLAGS)
-
-build: $(NAME_BIN)
+build: $(NAME_DBG)
 
 clean:
 	@rm -rf $(PATH_OBJ)
@@ -198,9 +106,9 @@ re:				fclean all
 
 is_multiboot: $(NAME_BIN)
 	@if grub-file --is-x86-multiboot2 $(NAME_BIN); then \
-		/bin/echo -e "${SUCCESS} Multiboot2 confirmed ${RESET}" ; \
+		printf "${SUCCESS} Multiboot2 confirmed ${RESET}\n" ; \
 	else \
-		/bin/echo -e "${ERROR} The file is not multiboot ${RESET}" ; \
+		printf "${ERROR} The file is not multiboot ${RESET}\n" ; \
 		exit 1 ; \
 	fi
 
@@ -212,9 +120,9 @@ $(NAME_ISO):		$(NAME_DBG) $(GRUB_CFG) is_multiboot
 	@grub-mkrescue -o $@ $(PATH_ISO) >/dev/null 2>&1
 
 	@if [ $$? -eq 0 ]; then \
-		/bin/echo -e "${SUCCESS} ISO created ${RESET}" ; \
+		printf "${SUCCESS} ISO created ${RESET}\n" ; \
 	else \
-		/bin/echo -e "${ERROR} ISO creation failed ${RESET}" ; \
+		printf "${ERROR} ISO creation failed ${RESET}\n" ; \
 		exit 1 ; \
 	fi
 
@@ -242,15 +150,15 @@ monitor:
 
 $(NAME_DBG):		$(NAME_BIN)
 	@if [ -f $(NAME_DBG) ]; then \
-		/bin/echo -e "${WARNING} $(NAME_DBG) already exists ${RESET}" ; \
+		printf "${WARNING} $(NAME_DBG) already exists ${RESET}\n" ; \
 	else \
-		/bin/echo -e "${INFO} Optimizing size ${RESET}"; \
+		printf "${INFO} Optimizing size ${RESET}\n"; \
 		\
-		$(TARGET)-objcopy -R .gnu_debuglink $(NAME_BIN); \
-		$(TARGET)-objcopy --only-keep-debug $(NAME_BIN) $(NAME_DBG); \
-		$(TARGET)-objcopy --strip-all $(NAME_BIN); \
-		$(TARGET)-objcopy --add-gnu-debuglink=$(NAME_DBG) $(NAME_BIN); \
+		$(OBJCOPY) -R .gnu_debuglink $(NAME_BIN); \
+		$(OBJCOPY) --only-keep-debug $(NAME_BIN) $(NAME_DBG); \
+		$(OBJCOPY) --strip-all $(NAME_BIN); \
+		$(OBJCOPY) --add-gnu-debuglink=$(NAME_DBG) $(NAME_BIN); \
 	fi
 
 
-.PHONY: all clean fclean re is_multiboot run_curses run_gtk run_dist_monitor run_debug debug monitor
+.PHONY: all clean fclean re is_multiboot run_curses run_gtk run_dist_monitor run_debug debug monitor $(NAME_DBG)

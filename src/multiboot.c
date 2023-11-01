@@ -1,13 +1,12 @@
 #include "multiboot2.h"
 #include <stdint.h>
-#include <stddef.h>
 #include "IO/terminal.h"
 #include "panic.h"
 #include "mem/physical.h"
 
 mem_mapping_t mapping;
 
-void _preinit(int magic, uintptr_t addr)
+__unused void _preinit(int magic, uintptr_t addr)
 {
 	terminal_initialize();
 

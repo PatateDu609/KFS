@@ -1,43 +1,29 @@
 #include "mem/physical.h"
+#include "mem/allocator.h"
 #include "panic.h"
 
-extern void *ld_start;
-extern void *ld_end;
+physical_memory_t phys_alloc;
 
-uintptr_t start = (uintptr_t)&ld_start;
-uintptr_t end = (uintptr_t)&ld_end;
+__unused void init_physical(void) {
+	uintptr_t min = KERNEL_START;
+	ptrdiff_t kern_size = (KERNEL_END - KERNEL_START);
 
-physical_memory_t pmem;
-
-static void init_bitmap(void)
-{
-
-}
-
-void init_physical(void)
-{
-	uintptr_t min = start;
-	ptrdiff_t kern_size = end - start;
-
-	for (multiboot_uint32_t i = 0; i < mapping.nb; i++)
-	{
+	for (multiboot_uint32_t i = 0; i < mapping.nb; i++) {
 		multiboot_memory_map_t *entry = mapping.mmap->entries + i;
 
-		if (entry->type == MULTIBOOT_MEMORY_AVAILABLE)
-		{
+		if (entry->type == MULTIBOOT_MEMORY_AVAILABLE) {
 			uintptr_t addr = entry->addr;
 			if (addr < min)
 				continue;
-			if (kern_size > (long)entry->len)
+			if (kern_size > (long) entry->len)
 				continue;
-			pmem.data = (uint8_t *)ALIGN(addr + kern_size, FRAME_SIZE);
-			pmem.size = (entry->addr + entry->len) - (uintptr_t)pmem.data;
+
+			phys_alloc.entry = entry;
+			init_bitmap(kern_size);
 			break;
 		}
 	}
 
-	if (pmem.data == NULL)
+	if (phys_alloc.data == NULL)
 		kpanic("Error: %s:%d: No available memory found", __FILE__, __LINE__);
-
-	init_bitmap();
 }
