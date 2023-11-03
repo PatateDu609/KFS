@@ -1,5 +1,5 @@
 #include "mem/allocator.h"
-#include <stdbool.h>
+#include "panic.h"
 
 void *kmalloc(size_t size) {
 	static const size_t bits = sizeof(*phys_alloc.bitmap) * 8;
@@ -42,4 +42,20 @@ void *kmalloc(size_t size) {
 		}
 	}
 	return phys_alloc.data + (page * FRAME_SIZE);
+}
+
+void kfree(void *ptr) {
+	static const size_t bits = sizeof(*phys_alloc.bitmap) * 8;
+
+	ptrdiff_t diff = (uint32_t)ptr - (uint32_t)phys_alloc.data;
+
+	if (diff % FRAME_SIZE != 0) {
+		kpanic("kfree: bad pointer\n");
+	}
+
+	size_t page = diff / FRAME_SIZE;
+	size_t byte = page / bits;
+	size_t offset = page % bits;
+
+	phys_alloc.bitmap[byte] &= ~(1 << offset);
 }
