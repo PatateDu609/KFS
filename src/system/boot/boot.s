@@ -10,6 +10,7 @@ extern				init_gdt
 extern				init_idt
 extern				init_pic
 extern				init_physical
+extern              init_paging
 
 _start:
 	mov				esp, stack_top
@@ -31,6 +32,7 @@ init:
 	call			init_pic
 	call			init_idt
 	call			init_physical
+	call            init_paging
 
 	sti 								; enable interrupts
 	ret

@@ -15,3 +15,13 @@ void kpanic(const char *msg, ...)
 
 	__unreachable
 }
+
+void __assert(bool cond, const char *cond_str, const char *msg) {
+	if (cond) {
+		return ;
+	}
+
+	kpanic("assert failed: %s: %s\n", cond_str, msg);
+
+	__unreachable;
+}

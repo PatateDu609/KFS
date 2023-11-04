@@ -2,6 +2,8 @@
 #include "panic.h"
 
 void *kmalloc(size_t size) {
+	ASSERT(phys_alloc.bitmap != NULL, "memory not initialized");
+
 	static const size_t bits = sizeof(*phys_alloc.bitmap) * 8;
 
 	size = ALIGN(size, FRAME_SIZE);
@@ -31,7 +33,7 @@ void *kmalloc(size_t size) {
 	for (size_t remaining = nb_pages; remaining > 0; remaining--) {
 		uint32_t mask = 0;
 
-		for (size_t i = offset; remaining > 0 && i < bits; i++, remaining--)
+		for (size_t i = offset; remaining > 0 && i < bits; i++, remaining = (remaining <= 1) ? 0 : remaining - 1)
 			mask |= 1 << i;
 
 		phys_alloc.bitmap[byte] |= mask;
@@ -40,11 +42,16 @@ void *kmalloc(size_t size) {
 			byte++;
 			offset = 0;
 		}
+
+		if (remaining == 0) break;
 	}
+	phys_alloc.last_alloc_bit = page + nb_pages - 1; // Returns the index of the last allocated bit (starting from 0)
 	return phys_alloc.data + (page * FRAME_SIZE);
 }
 
 void kfree(void *ptr) {
+	ASSERT(phys_alloc.bitmap != NULL, "memory not initialized");
+
 	static const size_t bits = sizeof(*phys_alloc.bitmap) * 8;
 
 	ptrdiff_t diff = (uint32_t)ptr - (uint32_t)phys_alloc.data;

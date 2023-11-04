@@ -35,6 +35,9 @@ CFLAGS				:=	-Wall -Werror -Wextra 			\
 ASFLAGS				:=	-f elf32 -g -F dwarf
 LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc --gc-sections
 
+RAM_SIZE			:=	256								# size in MB
+QEMU_FLAGS			:=	-m $(RAM_SIZE)
+
 include sources.mk
 
 GRUB_CFG			:=	grub.cfg
@@ -64,10 +67,10 @@ BMAGENTA			:=	\e[1;35m
 BCYAN				:=	\e[1;36m
 BYELLOW				:=	\e[1;33m
 
-INFO				:=	${BBLUE}❯ $(BLUE)
-WARNING				:=	${BYELLOW}⚠$(YELLOW)
-ERROR				:=	${BRED}✗$(RED)
-SUCCESS				:=	${BGREEN}✓$(GREEN)
+INFO				:=	${BBLUE} ❯ $(BLUE)
+WARNING				:=	${BYELLOW} ⚠$(YELLOW)
+ERROR				:=	${BRED} ✗$(RED)
+SUCCESS				:=	${BGREEN} ✓$(GREEN)
 
 ########################################################################################################################
 
@@ -127,20 +130,20 @@ $(NAME_ISO):		$(NAME_DBG) $(GRUB_CFG) is_multiboot
 	fi
 
 run_curses:
-	$(QEMU) -m 1G -D ./log.txt -cdrom $(NAME_ISO) -display curses
+	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display curses $(QEMU_FLAGS)
 
 run_dist_monitor:		$(NAME_ISO)
-	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display curses -monitor telnet:localhost:1234,server,nowait
+	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display curses -monitor telnet:localhost:1234,server,nowait $(QEMU_FLAGS)
 
 run_gtk:			$(NAME_ISO)
-	$(QEMU) -cdrom $(NAME_ISO) -display gtk
+	$(QEMU) -cdrom $(NAME_ISO) -display gtk $(QEMU_FLAGS)
 
 run_cocoa:
-	$(QEMU) -cdrom $(NAME_ISO) -display cocoa
+	$(QEMU) -cdrom $(NAME_ISO) -display cocoa $(QEMU_FLAGS)
 
 run_debug: 			DISPLAY := curses
 run_debug:
-	$(QEMU) -cdrom $(NAME_ISO) -display $(DISPLAY) -S -s
+	$(QEMU) -cdrom $(NAME_ISO) -display $(DISPLAY) -S -s $(QEMU_FLAGS)
 
 debug:
 	@gdb -x .gdbinit
@@ -161,4 +164,4 @@ $(NAME_DBG):		$(NAME_BIN)
 	fi
 
 
-.PHONY: all clean fclean re is_multiboot run_curses run_gtk run_dist_monitor run_debug debug monitor $(NAME_DBG)
+.PHONY: all clean fclean re is_multiboot run_curses run_gtk run_dist_monitor run_debug debug monitor

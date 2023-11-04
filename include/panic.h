@@ -8,4 +8,7 @@
 __noreturn
 void kpanic(const char *msg, ...);
 
+#define ASSERT(cond, msg) __assert((cond), STR(cond), msg)
+void __assert(bool cond, const char *cond_str, const char *msg);
+
 #endif
