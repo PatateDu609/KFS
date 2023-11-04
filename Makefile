@@ -35,7 +35,7 @@ CFLAGS				:=	-Wall -Werror -Wextra 			\
 ASFLAGS				:=	-f elf32 -g -F dwarf
 LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc --gc-sections
 
-RAM_SIZE			:=	256								# size in MB
+RAM_SIZE			:=	1G								# size in MB
 QEMU_FLAGS			:=	-m $(RAM_SIZE)
 
 include sources.mk
