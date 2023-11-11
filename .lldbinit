@@ -1,0 +1,6 @@
+target create kfs-0.3.0.bin
+target symbols add kfs-0.3.0.dbg
+gdb-remote localhost:1234
+settings set target.x86-disassembly-flavor intel
+
+command script import scripts/registers.py
