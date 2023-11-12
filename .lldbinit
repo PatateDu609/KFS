@@ -4,3 +4,5 @@ gdb-remote localhost:1234
 settings set target.x86-disassembly-flavor intel
 
 command script import scripts/registers.py
+
+br s -n _start

@@ -19,7 +19,7 @@ static uint64_t create_entry(uint32_t base, uint32_t limit, uint16_t flags) {
 }
 
 static uint64_t gdt[7];
-struct gdtr *gdtr = (struct gdtr *) 0x800;
+struct gdtr *gdtr = (struct gdtr *) GDT_ADDR;
 
 void init_gdt(void) {
 	uint64_t gdt_tmp[] = {

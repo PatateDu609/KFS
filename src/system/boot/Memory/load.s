@@ -1,5 +1,4 @@
 %define CR0_PAGING (1 << 31)
-%define CR4_PSE (1 << 4)
 
 section .text
 	global enable_paging
@@ -7,23 +6,11 @@ section .text
 	global flush_tlb
 	global flush_cr3
 
-; void enable_paging(int enable_pse)
+; void enable_paging(void)
 enable_paging:
-	pop ebx
-	cmp ebx, 0
-
-	je set_paging
-
-	mov eax, cr4
-	or eax, CR4_PSE
-	mov cr4, eax ; enable PSE (4MB pages)
-
-set_paging:
 	mov eax, cr0
 	or eax, CR0_PAGING
 	mov cr0, eax ; enable paging
-
-
 	ret
 
 
@@ -44,6 +31,6 @@ flush_tlb:
 
 ; void flush_cr3(uint32_t addr)
 flush_cr3:
-	pop ebx
+	mov ebx, [esp + 4]
 	mov cr3, ebx
 	ret

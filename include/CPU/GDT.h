@@ -56,6 +56,8 @@
 
 #define KMCS 0x08 // Kernel Mode, Code Segment
 
+#define GDT_ADDR 0x800
+
 
 #define GET_STACK_POINTER(x) \
 	asm("mov %%esp, %0" : "=r" (x));

@@ -9,6 +9,8 @@
 #define PS1 "KFS > "
 #endif
 
+#define TERMINAL_VM86_ADDR 0xB8000
+
 extern bool prompt;
 
 enum vga_color

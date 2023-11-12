@@ -1,40 +1,46 @@
+OUTPUT_FORMAT("elf32-i386")
 ENTRY(_start)
 
-PHDRS
-{
-	headers PT_PHDR PHDRS;
-	text PT_LOAD FILEHDR PHDRS;
-	readonly PT_LOAD;
-	data PT_LOAD;
-}
-
+KERN_START = 0xC0000000;
+PHYS_START = 1M;
 SECTIONS
 {
-	ld_start = 1M;
-	. = ld_start;
+	. = PHYS_START;
+	ld_start = .;
 
-	.text BLOCK(4K) : ALIGN(4K)
+	.multiboot.data ALIGN(4K) : {
+		KEEP(*(.multiboot.data))
+	}
+
+	.multiboot.text ALIGN(4K) : {
+		*(.multiboot.text)
+	}
+
+	. += KERN_START;
+
+	.text ALIGN(4K): AT(ADDR(.text) - KERN_START)
 	{
-		KEEP(*(.multiboot))
 		*(.text*)
-	} :text
+	}
 
-	.rodata BLOCK(4K) : ALIGN(4K)
+
+	.rodata ALIGN(4K) : AT(ADDR(.rodata) - KERN_START)
 	{
 		*(.rodata*)
-	} :readonly
+	}
 
-	.data BLOCK(4K) : ALIGN(4K)
+	.data ALIGN(4K) : AT(ADDR(.data) - KERN_START)
 	{
 		*(.data*)
-	} :data
+	}
 
-	.bss BLOCK(4K) : ALIGN(4K)
+	.bss ALIGN(4K) : AT(ADDR(.bss) - KERN_START)
 	{
 		sbss = .;
 		*(COMMON*)
 		*(.bss*)
 		ebss = .;
-		ld_end = .;
-	} :data
+	}
+
+	ld_end = .;
 }

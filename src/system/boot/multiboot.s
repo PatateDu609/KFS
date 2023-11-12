@@ -9,7 +9,7 @@
 %define CHECKSUM					-(MAGIC + ARCH + LENGTH)
 
 
-section								.multiboot
+section								.multiboot.data
 _multiboot_hdr_start:
 	align							4
 	dd								MAGIC

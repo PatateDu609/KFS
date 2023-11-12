@@ -1,6 +1,4 @@
 #include "IO/terminal.h"
-#include "CPU/port.h"
-#include "IO/write.h"
 #include "IO/printk.h"
 #include <string.h>
 
@@ -8,7 +6,7 @@ bool prompt = false;
 
 terminal_t terminal[12];
 uint8_t term_cur = 0;
-uint16_t *terminal_buffer = (uint16_t *)0xB8000;
+uint16_t *terminal_buffer = (uint16_t *)TERMINAL_VM86_ADDR;
 
 void terminal_motd(void)
 {
