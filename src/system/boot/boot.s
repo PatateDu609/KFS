@@ -89,7 +89,7 @@ init:
 	call			init_gdt
 	call			init_pic
 	call			init_idt
-	call			init_physical
+	; call			init_physical
 
 	sti 								; enable interrupts
 	ret

@@ -36,7 +36,7 @@ ASFLAGS				:=	-f elf32 -g -F dwarf
 LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc --gc-sections
 
 RAM_SIZE			:=	1G								# size in MB
-QEMU_FLAGS			:=	-m $(RAM_SIZE) -no-reboot -no-shutdown
+QEMU_FLAGS			:=	-m $(RAM_SIZE) #-no-reboot -no-shutdown
 
 include sources.mk
 
@@ -132,8 +132,13 @@ $(NAME_ISO):		$(NAME_DBG) $(GRUB_CFG) is_multiboot
 run_curses:
 	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display curses $(QEMU_FLAGS)
 
-run_dist_monitor:		$(NAME_ISO)
-	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display curses -monitor telnet:localhost:1234,server,nowait $(QEMU_FLAGS)
+run_dist_monitor:		DISPLAY := curses
+run_dist_monitor:
+	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display $(DISPLAY) -monitor telnet:localhost:1234,server,nowait $(QEMU_FLAGS)
+
+run_monitor:			DISPLAY := curses
+run_monitor:
+	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display $(DISPLAY) -monitor $(shell tty) $(QEMU_FLAGS)
 
 run_gtk:			$(NAME_ISO)
 	$(QEMU) -cdrom $(NAME_ISO) -display gtk $(QEMU_FLAGS)

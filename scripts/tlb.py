@@ -1,6 +1,14 @@
-def tlb(addr):
-    binary = '{0:032b}'.format(addr)
-    split = f'{binary[0:12]} {binary[12:22]} {binary[22:]}'.split(' ')
+def str_rev(s: str) -> str:
+    rev = ""
+    for c in s:
+        rev = c + rev
+    return rev
+
+
+def tlb(addr: int) -> list[int]:
+    binary = str_rev('{0:032b}'.format(addr))
+
+    split = f'{str_rev(binary[0:12])} {str_rev(binary[12:22])} {str_rev(binary[22:])}'.split(' ')
     split.reverse()
     return [int(i, 2) for i in split]
 
