@@ -23,7 +23,7 @@ disable_paging:
 	ret
 
 
-; void flush_tlb(uint32_t vaddr)
+; void flush_tlb(uint32_t idx)
 flush_tlb:
 	pop ebx
 	invlpg [ebx]

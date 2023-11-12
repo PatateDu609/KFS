@@ -56,7 +56,7 @@
 
 #define KMCS 0x08 // Kernel Mode, Code Segment
 
-#define GDT_ADDR 0x800
+#define GDT_ADDR 0xC0000800
 
 
 #define GET_STACK_POINTER(x) \

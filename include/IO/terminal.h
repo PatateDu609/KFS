@@ -9,7 +9,7 @@
 #define PS1 "KFS > "
 #endif
 
-#define TERMINAL_VM86_ADDR 0xB8000
+#define TERMINAL_VM86_ADDR 0xC00B8000
 
 extern bool prompt;
 

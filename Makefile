@@ -36,7 +36,7 @@ ASFLAGS				:=	-f elf32 -g -F dwarf
 LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc --gc-sections
 
 RAM_SIZE			:=	1G								# size in MB
-QEMU_FLAGS			:=	-m $(RAM_SIZE) #-no-reboot -no-shutdown
+QEMU_FLAGS			:=	-m $(RAM_SIZE) -no-reboot -no-shutdown
 
 include sources.mk
 

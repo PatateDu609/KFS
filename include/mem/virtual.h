@@ -24,10 +24,7 @@ extern page_directory_entry_conv_t boot_page_directory[1024];
 void finalize_paging_setup(void);
 
 // Defined in assembly src/system/boot/Memory/load.s
-void enable_paging(void);
-
-void flush_cr3(uint32_t addr);
-
 void reset_cr3(void);
+void flush_tlb(uint32_t idx);
 
 #endif //KFS_VIRTUAL_H
