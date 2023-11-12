@@ -43,7 +43,7 @@ page_directory_init_next:                   ; sets specific page config
 	and edi, VIRT_ADDR_MASK
 	or edi, PAGE_TABLE_READ_WRITE | PAGE_TABLE_PRESENT
 	mov [eax + 0], edi
-    mov [eax + 768], edi
+    mov [eax + 768 * 4], edi
 
 enable_paging:
 	mov cr3, eax
@@ -65,10 +65,13 @@ extern				init_gdt
 extern				init_idt
 extern				init_pic
 extern				init_physical
-extern              init_paging
+extern              finalize_paging_setup
 
 higher_half:
+	mov             dword [boot_page_directory], PAGE_TABLE_READ_WRITE
+	invlpg          [0]
 	mov				esp, stack_top
+	call            finalize_paging_setup
 
 	push			ebx					; Pushing to the stack the multiboot info structure address
 	push			eax					; Pushing to the stack the magic number
@@ -86,8 +89,7 @@ init:
 	call			init_gdt
 	call			init_pic
 	call			init_idt
-	; call			init_physical
-	; call          init_paging
+	call			init_physical
 
 	sti 								; enable interrupts
 	ret

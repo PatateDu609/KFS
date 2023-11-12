@@ -36,7 +36,7 @@ ASFLAGS				:=	-f elf32 -g -F dwarf
 LDFLAGS				:=	-T $(LINKER) -L$(PATH_LIB_GCC) -lgcc --gc-sections
 
 RAM_SIZE			:=	1G								# size in MB
-QEMU_FLAGS			:=	-m $(RAM_SIZE)
+QEMU_FLAGS			:=	-m $(RAM_SIZE) -no-reboot -no-shutdown
 
 include sources.mk
 
@@ -143,7 +143,7 @@ run_cocoa:
 
 run_debug: 			DISPLAY := curses
 run_debug:
-	$(QEMU) -cdrom $(NAME_ISO) -display $(DISPLAY) -S -s $(QEMU_FLAGS)
+	$(QEMU) -D ./log.txt -cdrom $(NAME_ISO) -display $(DISPLAY) -S -s $(QEMU_FLAGS)
 
 debug:
 	@gdb -x .gdbinit

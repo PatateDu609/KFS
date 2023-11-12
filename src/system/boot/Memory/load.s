@@ -5,6 +5,7 @@ section .text
 	global disable_paging
 	global flush_tlb
 	global flush_cr3
+	global reset_cr3
 
 ; void enable_paging(void)
 enable_paging:
@@ -32,5 +33,11 @@ flush_tlb:
 ; void flush_cr3(uint32_t addr)
 flush_cr3:
 	mov ebx, [esp + 4]
+	mov cr3, ebx
+	ret
+
+; void reset_cr3(void)
+reset_cr3:
+	mov ebx, cr3
 	mov cr3, ebx
 	ret

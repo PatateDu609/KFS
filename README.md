@@ -14,7 +14,8 @@ into the machine (or the emulator).
 - [x] Manage keyboard (using interrupts)
 - [x] Add a small shell with a few commands (clear, lsmmap, shutdown, reboot...)
 - [x] Manage exceptions (using interrupts)
-- [ ] Enable paging, and manage memory (physical and virtual addresses)
+- [ ] Enable paging, and manage memory (physical and virtual addresses).
+- [x] Setup Higher half kernel
 
 
 ## Dependencies
