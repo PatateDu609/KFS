@@ -13,7 +13,6 @@ SYSTEM_BASENAME		:=	system/panic.c							\
                         system/boot/IDT/wrappers.c				\
                         system/boot/Memory/load.s				\
                         system/boot/Memory/init_physical.c		\
-                        system/boot/Memory/paging.c				\
                         \
                         system/IO/init.c						\
                         system/IO/terminal.c					\

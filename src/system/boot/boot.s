@@ -13,8 +13,15 @@ bits 32
 %define PAGE_TABLE_PRESENT (1)
 
 section				.multiboot.text
+extern              multiboot2_magic
+extern              multiboot2_addr
+
+
 global _start:function
 _start:
+	mov [V2P(multiboot2_magic)], eax
+	mov [V2P(multiboot2_addr)], ebx
+
 	mov eax, V2P(boot_page_directory)     ; take the physical address of the page directory
 	mov ebx, V2P(boot_first_table)        ; take the physical address of the first page table
 
@@ -65,13 +72,11 @@ extern				init_gdt
 extern				init_idt
 extern				init_pic
 extern				init_physical
-extern              finalize_paging_setup
 
 higher_half:
 	mov             dword [boot_page_directory], PAGE_TABLE_READ_WRITE
 	invlpg          [0]
 	mov				esp, stack_top
-	call            finalize_paging_setup
 
 	push			ebx					; Pushing to the stack the multiboot info structure address
 	push			eax					; Pushing to the stack the magic number
@@ -89,7 +94,7 @@ init:
 	call			init_gdt
 	call			init_pic
 	call			init_idt
-	; call			init_physical
+	call			init_physical
 
 	sti 								; enable interrupts
 	ret
